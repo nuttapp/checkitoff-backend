@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend system for checkitoff",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {
+    "grunt-clear": "^0.2.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-shell-spawn": "^0.3.0",
+    "jit-grunt": "^0.9.0",
+    "time-grunt": "^1.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Greg Ingelmo",
+  "license": "ISC"
+}

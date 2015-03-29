@@ -1,0 +1,50 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/gocql/gocql"
+	m "github.com/nuttapp/checkitoff-backend/common/models"
+	. "github.com/smartystreets/goconvey/convey"
+)
+
+func TestMain_Integration(t *testing.T) {
+	var cle = &m.CreateListEvent{
+		Server: m.ServerFields{
+			Hostname:  "localhost",
+			IPAddress: "127.0.0.1",
+		},
+		Client: m.ClientFields{
+			ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
+			DeviceType: "iPhone",
+			OsVersion:  "7,2",
+		},
+		User: m.UserFields{
+			ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
+			Name: "test-user-name",
+		},
+		EventFields: m.EventFields{
+			ID:   gocql.TimeUUID().String(),
+			Type: m.CreateListEventType,
+		},
+		Data: m.CreateListEventData{
+			List: m.ListFields{
+				ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
+				Title: "Trader Joes",
+			},
+		},
+	}
+
+	Convey("SaveCreateListEvent", t, func() {
+		cluster := gocql.NewCluster("127.0.0.1")
+		cluster.Keyspace = "demodb"
+		cluster.Consistency = gocql.Quorum
+		session, _ := cluster.CreateSession()
+		defer session.Close()
+
+		Convey("Should save to database", func() {
+			err := SaveCreateListEvent(cle)
+			So(err, ShouldBeNil)
+		})
+	})
+}
