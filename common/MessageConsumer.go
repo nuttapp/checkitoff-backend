@@ -15,10 +15,10 @@ const (
 )
 
 type ConsumerConfig struct {
-	Topic           string
-	Channel         string
-	LookupdHTTPaddr string
-	Concurrency     int // # of goroutine to spawn for nsq handlers
+	Topic           string // The name of the master topic
+	Channel         string // The channel name to use when consuming 1 topic -> N Channels
+	LookupdHTTPaddr string // ex: 127.0.0.1:4161
+	Concurrency     int    // # of goroutine to spawn for nsq handlers
 }
 
 func NewMessageConsumer(cfg *ConsumerConfig, nsqCfg *nsq.Config, handler nsq.Handler) *MessageConsumer {
