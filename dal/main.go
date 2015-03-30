@@ -55,6 +55,8 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 		fmt.Println("Failed to unmarshal JSON from NSQ message: %s", err)
 	}
 
+	fmt.Printf("RECV msg: %s, %s \n", j["type"], j["id"])
+
 	switch j["type"] {
 	case m.CreateListEventType:
 		cle, err := m.DeserializeCreateListEvent(msg.Body)
