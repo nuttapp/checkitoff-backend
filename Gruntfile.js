@@ -25,5 +25,6 @@ module.exports = function (grunt) {
     }; 
 
     grunt.registerTask('build_go_code', ['shell:go_install', 'clear', 'shell:go_test']);
+    grunt.registerTask('default', 'watch');
     grunt.initConfig(gruntConfig);
 };
