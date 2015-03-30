@@ -58,13 +58,13 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 	fmt.Printf("RECV msg: %s, %s \n", j["type"], j["id"])
 
 	switch j["type"] {
-	case m.CreateListEventType:
-		cle, err := m.DeserializeCreateListEvent(msg.Body)
+	case m.CreateListMsgType:
+		cle, err := m.DeserializeCreateListMsg(msg.Body)
 		if err != nil {
 			return err
 		}
 
-		err = SaveCreateListEvent(cle)
+		err = SaveCreateListMsg(cle)
 		if err != nil {
 			return err
 		}
@@ -83,7 +83,7 @@ func SaveInviteUserToListEvent() {
 	// }
 }
 
-func SaveCreateListEvent(cle *m.CreateListEvent) error {
+func SaveCreateListMsg(cle *m.CreateListMsg) error {
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "demodb"
 	cluster.Consistency = gocql.Quorum

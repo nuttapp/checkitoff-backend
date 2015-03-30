@@ -17,16 +17,16 @@ const (
 )
 
 const (
-	CreateListEventJSONUnmarshalError = "Failed to unmarshal json into CreateListEvent"
-	CreateListEventJSONMarshalError   = "Failed to marshal CreateListEvent into json"
-	CreateListEventValidationError    = "Validation failed for CreateListEvent"
+	CreateListMsgJSONUnmarshalError = "Failed to unmarshal json into CreateListMsg"
+	CreateListMsgJSONMarshalError   = "Failed to marshal CreateListMsg into json"
+	CreateListMsgValidationError    = "Validation failed for CreateListMsg"
 )
 
 func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
-	var event m.CreateListEvent
+	var event m.CreateListMsg
 	err := json.Unmarshal(jsonText, &event)
 	if err != nil {
-		return util.NewError(CreateListEventJSONUnmarshalError, err)
+		return util.NewError(CreateListMsgJSONUnmarshalError, err)
 	}
 
 	event.ID = gocql.TimeUUID().String()
@@ -47,7 +47,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 
 	err = event.IsReadyToBeSaved()
 	if err != nil {
-		return util.NewError(CreateListEventValidationError, err)
+		return util.NewError(CreateListMsgValidationError, err)
 	}
 
 	producer, err := nsq.NewProducer(apiCfg.NSQProducerTCPAddr, nsqCfg)
@@ -57,7 +57,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 
 	b, err := json.Marshal(event)
 	if err != nil {
-		return util.NewError(CreateListEventJSONMarshalError, err)
+		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
 	err = producer.Publish("api_events", b)

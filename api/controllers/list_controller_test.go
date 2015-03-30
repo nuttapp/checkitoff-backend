@@ -36,7 +36,7 @@ var apiCfg = &config.Config{
 }
 
 func Test_ListController_Integration(t *testing.T) {
-	Convey("Should enqueue CreateListEvent on NSQ", t, func() {
+	Convey("Should enqueue CreateListMsg on NSQ", t, func() {
 		nsqCfg := nsq.NewConfig()
 		err := ListControllerCreate(createListEventJSON, nsqCfg, apiCfg)
 		So(err, ShouldEqual, nil)
@@ -45,7 +45,7 @@ func Test_ListController_Integration(t *testing.T) {
 
 func Test_ListController_Unit(t *testing.T) {
 	Convey("ListControllerCreate", t, func() {
-		var cle = m.CreateListEvent{
+		var cle = m.CreateListMsg{
 			Client: m.ClientFields{
 				ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 				DeviceType: "iPhone",
@@ -58,7 +58,7 @@ func Test_ListController_Unit(t *testing.T) {
 			EventFields: m.EventFields{
 				Type: "create-list-event",
 			},
-			Data: m.CreateListEventData{
+			Data: m.CreateListMsgData{
 				List: m.ListFields{
 					Title: "Trader Joes",
 				},
@@ -126,8 +126,8 @@ func Test_ListController_Unit(t *testing.T) {
 		})
 	})
 
-	Convey("Should deserialize json into CreateListEvent", t, func() {
-		event, err := m.DeserializeCreateListEvent(createListEventJSON)
+	Convey("Should deserialize json into CreateListMsg", t, func() {
+		event, err := m.DeserializeCreateListMsg(createListEventJSON)
 		// fmt.Println(util.ToJSON(event))
 
 		So(event, ShouldNotBeNil)

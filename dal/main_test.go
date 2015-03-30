@@ -9,7 +9,7 @@ import (
 )
 
 func TestMain_Integration(t *testing.T) {
-	var cle = &m.CreateListEvent{
+	var cle = &m.CreateListMsg{
 		Server: m.ServerFields{
 			Hostname:  "localhost",
 			IPAddress: "127.0.0.1",
@@ -25,9 +25,9 @@ func TestMain_Integration(t *testing.T) {
 		},
 		EventFields: m.EventFields{
 			ID:   gocql.TimeUUID().String(),
-			Type: m.CreateListEventType,
+			Type: m.CreateListMsgType,
 		},
-		Data: m.CreateListEventData{
+		Data: m.CreateListMsgData{
 			List: m.ListFields{
 				ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
 				Title: "Trader Joes",
@@ -35,7 +35,7 @@ func TestMain_Integration(t *testing.T) {
 		},
 	}
 
-	Convey("SaveCreateListEvent", t, func() {
+	Convey("SaveCreateListMsg", t, func() {
 		cluster := gocql.NewCluster("127.0.0.1")
 		cluster.Keyspace = "demodb"
 		cluster.Consistency = gocql.Quorum
@@ -43,7 +43,7 @@ func TestMain_Integration(t *testing.T) {
 		defer session.Close()
 
 		Convey("Should save to database", func() {
-			err := SaveCreateListEvent(cle)
+			err := SaveCreateListMsg(cle)
 			So(err, ShouldBeNil)
 		})
 	})

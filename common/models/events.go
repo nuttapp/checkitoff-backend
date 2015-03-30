@@ -9,7 +9,7 @@ import (
 
 const (
 	// Catch fat finger mistakes where an event type is not equal to it's intended event type
-	// ex: a CreateListEvent should never have an EventType "UpdateListEvent"
+	// ex: a CreateListMsg should never have an EventType "UpdateListEvent"
 	InvalidEventTypeError = "Invalid event type"
 
 	// base event fields
@@ -24,17 +24,17 @@ const (
 	MissingListIDError    = "List id cannot be emtpy"
 	MissingListTitleError = "List title cannot be empty"
 
-	CreateListEventType = "create-list"
+	CreateListMsgType = "create-list"
 )
 
 type Event interface {
 	IsReadyToBeSaved() error
 }
 
-func NewCreateListEvent() CreateListEvent {
-	return CreateListEvent{
+func NewCreateListMsg() CreateListMsg {
+	return CreateListMsg{
 		EventFields: EventFields{
-			Type: CreateListEventType,
+			Type: CreateListMsgType,
 			ID:   gocql.TimeUUID().String(),
 		},
 	}
@@ -65,14 +65,14 @@ func ValidateEvent(c *ClientFields, u *UserFields, e *EventFields, s *ServerFiel
 	return nil
 }
 
-// CreateListEventData wraps any fields specific to this event
-type CreateListEventData struct {
+// CreateListMsgData wraps any fields specific to this event
+type CreateListMsgData struct {
 	List ListFields
 }
 
-// DeserializeCreateListEvent deserializes a JSON serialized CreateListEvent struct
-func DeserializeCreateListEvent(jsonText []byte) (*CreateListEvent, error) {
-	var event CreateListEvent
+// DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
+func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
+	var event CreateListMsg
 	err := json.Unmarshal(jsonText, &event)
 	if err != nil {
 		return nil, err
