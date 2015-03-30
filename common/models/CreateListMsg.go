@@ -1,7 +1,11 @@
 // CreateListMsg encapsulates the action of a user creating a list
 package models
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/gocql/gocql"
+)
 
 type CreateListMsg struct {
 	Server Server `json:"server"`
@@ -9,6 +13,15 @@ type CreateListMsg struct {
 	User   User   `json:"user"`
 	EventFields
 	Data CreateListMsgData `json:"data"`
+}
+
+func NewCreateListMsg() CreateListMsg {
+	return CreateListMsg{
+		EventFields: EventFields{
+			Type: CreateListMsgType,
+			ID:   gocql.TimeUUID().String(),
+		},
+	}
 }
 
 // CreateListMsgData wraps any fields specific to this event
