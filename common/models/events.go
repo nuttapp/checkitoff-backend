@@ -40,32 +40,6 @@ func NewCreateListEvent() CreateListEvent {
 	}
 }
 
-// CreateListEvent encapsulates the action of a user creating a list
-type CreateListEvent struct {
-	Server ServerFields `json:"server"`
-	Client ClientFields `json:"client"`
-	User   UserFields   `json:"user"`
-	EventFields
-	Data CreateListEventData `json:"data"`
-}
-
-func (e *CreateListEvent) IsReadyToBeSaved() error {
-	err := ValidateEvent(&e.Client, &e.User, &e.EventFields, &e.Server)
-	if err != nil {
-		return err
-	}
-	if len(e.Data.List.ID) == 0 {
-		return errors.New(MissingListIDError)
-	}
-	if len(e.Data.List.Title) == 0 {
-		return errors.New(MissingListTitleError)
-	}
-	if e.Type != CreateListEventType {
-		return errors.New(InvalidEventTypeError)
-	}
-	return nil
-}
-
 func ValidateEvent(c *ClientFields, u *UserFields, e *EventFields, s *ServerFields) error {
 	if len(c.ID) == 0 {
 		return errors.New(MissingClientIDError)
