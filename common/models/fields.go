@@ -1,22 +1,22 @@
 package models
 
-type ServerFields struct {
+type Server struct {
 	Hostname  string `json:"hostname"`
 	IPAddress string `json:"ipAddress"`
 }
 
-type ClientFields struct {
+type Client struct {
 	DeviceType string `json:"deviceType"`
 	ID         string `json:"id"`
 	OsVersion  string `json:"osVersion"`
 }
 
-type ListFields struct {
+type List struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
 }
 
-type UserFields struct {
+type User struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }

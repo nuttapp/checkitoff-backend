@@ -40,7 +40,8 @@ func NewCreateListMsg() CreateListMsg {
 	}
 }
 
-func ValidateEvent(c *ClientFields, u *UserFields, e *EventFields, s *ServerFields) error {
+// ValidateEvent examples the fields that every event needs and throws an error if they're blank
+func ValidateEvent(c *Client, u *User, e *EventFields, s *Server) error {
 	if len(c.ID) == 0 {
 		return errors.New(MissingClientIDError)
 	}
@@ -63,11 +64,6 @@ func ValidateEvent(c *ClientFields, u *UserFields, e *EventFields, s *ServerFiel
 		return errors.New(MissingServerIPAddressError)
 	}
 	return nil
-}
-
-// CreateListMsgData wraps any fields specific to this event
-type CreateListMsgData struct {
-	List ListFields
 }
 
 // DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct

@@ -4,11 +4,16 @@ package models
 import "errors"
 
 type CreateListMsg struct {
-	Server ServerFields `json:"server"`
-	Client ClientFields `json:"client"`
-	User   UserFields   `json:"user"`
+	Server Server `json:"server"`
+	Client Client `json:"client"`
+	User   User   `json:"user"`
 	EventFields
 	Data CreateListMsgData `json:"data"`
+}
+
+// CreateListMsgData wraps any fields specific to this event
+type CreateListMsgData struct {
+	List List
 }
 
 func (e *CreateListMsg) IsReadyToBeSaved() error {

@@ -46,12 +46,12 @@ func Test_ListController_Integration(t *testing.T) {
 func Test_ListController_Unit(t *testing.T) {
 	Convey("ListControllerCreate", t, func() {
 		var cle = m.CreateListMsg{
-			Client: m.ClientFields{
+			Client: m.Client{
 				ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 				DeviceType: "iPhone",
 				OsVersion:  "7,2",
 			},
-			User: m.UserFields{
+			User: m.User{
 				ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 				Name: "test-user-name",
 			},
@@ -59,7 +59,7 @@ func Test_ListController_Unit(t *testing.T) {
 				Type: "create-list-event",
 			},
 			Data: m.CreateListMsgData{
-				List: m.ListFields{
+				List: m.List{
 					Title: "Trader Joes",
 				},
 			},

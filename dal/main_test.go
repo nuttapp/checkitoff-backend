@@ -10,16 +10,16 @@ import (
 
 func TestMain_Integration(t *testing.T) {
 	var cle = &m.CreateListMsg{
-		Server: m.ServerFields{
+		Server: m.Server{
 			Hostname:  "localhost",
 			IPAddress: "127.0.0.1",
 		},
-		Client: m.ClientFields{
+		Client: m.Client{
 			ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 			DeviceType: "iPhone",
 			OsVersion:  "7,2",
 		},
-		User: m.UserFields{
+		User: m.User{
 			ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 			Name: "test-user-name",
 		},
@@ -28,7 +28,7 @@ func TestMain_Integration(t *testing.T) {
 			Type: m.CreateListMsgType,
 		},
 		Data: m.CreateListMsgData{
-			List: m.ListFields{
+			List: m.List{
 				ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
 				Title: "Trader Joes",
 			},
