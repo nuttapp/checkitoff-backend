@@ -1,11 +1,6 @@
 package models
 
-import (
-	"encoding/json"
-	"errors"
-
-	"github.com/gocql/gocql"
-)
+import "errors"
 
 const (
 	// Catch fat finger mistakes where an event type is not equal to it's intended event type
@@ -29,15 +24,6 @@ const (
 
 type Event interface {
 	IsReadyToBeSaved() error
-}
-
-func NewCreateListMsg() CreateListMsg {
-	return CreateListMsg{
-		EventFields: EventFields{
-			Type: CreateListMsgType,
-			ID:   gocql.TimeUUID().String(),
-		},
-	}
 }
 
 // ValidateEvent examples the fields that every event needs and throws an error if they're blank
@@ -64,14 +50,4 @@ func ValidateEvent(c *Client, u *User, e *EventFields, s *Server) error {
 		return errors.New(MissingServerIPAddressError)
 	}
 	return nil
-}
-
-// DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
-func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
-	var event CreateListMsg
-	err := json.Unmarshal(jsonText, &event)
-	if err != nil {
-		return nil, err
-	}
-	return &event, nil
 }
