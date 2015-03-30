@@ -2,6 +2,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/gocql/gocql"
@@ -15,6 +16,11 @@ type CreateListMsg struct {
 	Data CreateListMsgData `json:"data"`
 }
 
+// CreateListMsgData wraps any fields specific to this event
+type CreateListMsgData struct {
+	List List
+}
+
 func NewCreateListMsg() CreateListMsg {
 	return CreateListMsg{
 		EventFields: EventFields{
@@ -24,9 +30,14 @@ func NewCreateListMsg() CreateListMsg {
 	}
 }
 
-// CreateListMsgData wraps any fields specific to this event
-type CreateListMsgData struct {
-	List List
+// DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
+func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
+	var event CreateListMsg
+	err := json.Unmarshal(jsonText, &event)
+	if err != nil {
+		return nil, err
+	}
+	return &event, nil
 }
 
 func (e *CreateListMsg) IsReadyToBeSaved() error {
