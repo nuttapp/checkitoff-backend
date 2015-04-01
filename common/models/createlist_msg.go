@@ -4,6 +4,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/gocql/gocql"
 )
@@ -16,16 +17,40 @@ type CreateListMsg struct {
 	Data CreateListMsgData `json:"data"`
 }
 
+type UpdateListMsg struct {
+	Server Server `json:"server"`
+	Client Client `json:"client"`
+	User   User   `json:"user"`
+	EventFields
+	Data CreateListMsgData `json:"data"`
+}
+
+// updates fields of a particular list
+type UpdateListMsgData struct {
+	ID    *string
+	Title *string
+	Users *[]string
+}
+
 // CreateListMsgData wraps any fields specific to this event
 type CreateListMsgData struct {
-	List List
+	ID        string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Title     string
+	Users     []string
 }
 
 func NewCreateListMsg() CreateListMsg {
+	createdAt := time.Now().UTC()
 	return CreateListMsg{
 		EventFields: EventFields{
 			Type: CreateListMsgType,
 			ID:   gocql.TimeUUID().String(),
+		},
+		Data: CreateListMsgData{
+			CreatedAt: createdAt,
+			UpdatedAt: createdAt,
 		},
 	}
 }
@@ -45,10 +70,10 @@ func (e *CreateListMsg) IsReadyToBeSaved() error {
 	if err != nil {
 		return err
 	}
-	if len(e.Data.List.ID) == 0 {
+	if len(e.Data.ID) == 0 {
 		return errors.New(MissingListIDError)
 	}
-	if len(e.Data.List.Title) == 0 {
+	if len(e.Data.Title) == 0 {
 		return errors.New(MissingListTitleError)
 	}
 	if e.Type != CreateListMsgType {

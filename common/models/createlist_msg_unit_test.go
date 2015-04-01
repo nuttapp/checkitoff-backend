@@ -32,10 +32,8 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				ID: "create-list-msg-user-id",
 			},
 			Data: CreateListMsgData{
-				List{
-					ID:    "create-list-msg-list-id",
-					Title: "create-list-msg-list-title",
-				},
+				ID:    "create-list-msg-list-id",
+				Title: "create-list-msg-list-title",
 			},
 		}
 
@@ -46,13 +44,13 @@ func Test_CreateListMsg_unit(t *testing.T) {
 
 		Convey("should return errror when", func() {
 			Convey("list id is blank", func() {
-				msg.Data.List.ID = ""
+				msg.Data.ID = ""
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListIDError)
 			})
 			Convey("list title is blank", func() {
-				msg.Data.List.Title = ""
+				msg.Data.Title = ""
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListTitleError)

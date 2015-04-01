@@ -22,9 +22,7 @@ var createListEventJSON = []byte(`
 			"name": "Greg"
 		},
 		"data": {
-			"list": {
-				"title": "Trader Joes"
-			}
+			"title": "Trader Joes"
 		},
 		"type": "create-list"
 	}`)
@@ -59,9 +57,7 @@ func Test_ListController_Unit(t *testing.T) {
 				Type: "create-list-event",
 			},
 			Data: m.CreateListMsgData{
-				List: m.List{
-					Title: "Trader Joes",
-				},
+				Title: "Trader Joes",
 			},
 		}
 		Convey("should return error when missing client id", func() {
@@ -101,7 +97,7 @@ func Test_ListController_Unit(t *testing.T) {
 		})
 		Convey("should return error when missing list title", func() {
 			e := cle // create copy
-			e.Data.List.Title = ""
+			e.Data.Title = ""
 			var b, _ = json.Marshal(e)
 			err := ListControllerCreate(b, nil, apiCfg)
 			So(err.Error(), ShouldContainSubstring, m.MissingListTitleError)
@@ -134,8 +130,8 @@ func Test_ListController_Unit(t *testing.T) {
 		So(err, ShouldBeNil)
 		// Purposely left out id, it should show up as an empty value
 		// because the struct isn't using pointers to fields
-		So(event.Data.List.ID, ShouldEqual, "")
-		So(event.Data.List.Title, ShouldEqual, "Trader Joes")
+		So(event.Data.ID, ShouldEqual, "")
+		So(event.Data.Title, ShouldEqual, "Trader Joes")
 		So(event.User.Name, ShouldEqual, "Greg")
 	})
 }

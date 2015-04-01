@@ -94,7 +94,7 @@ func SaveCreateListMsg(cle *m.CreateListMsg) error {
 	updatedAt := gocql.TimeUUID()
 
 	insertList := session.Query(`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
-		cle.Data.List.ID, cle.Data.List.Title, createdAt, updatedAt, []string{cle.User.ID})
+		cle.Data.ID, cle.Data.Title, createdAt, updatedAt, []string{cle.User.ID})
 	err := insertList.Exec()
 	if err != nil {
 		return err
@@ -105,12 +105,12 @@ func SaveCreateListMsg(cle *m.CreateListMsg) error {
 		return err
 	}
 
-	insertListEvent := session.Query(`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
-		cle.Data.List.ID, cle.User.ID, cle.ID, cle.Type, b)
-	err = insertListEvent.Exec()
-	if err != nil {
-		return err
-	}
+	// insertListEvent := session.Query(`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
+	// 	cle.Data.List.ID, cle.User.ID, cle.ID, cle.Type, b)
+	// err = insertListEvent.Exec()
+	// if err != nil {
+	// 	return err
+	// }
 
 	insertUserTimeline := session.Query(`INSERT INTO user_timeline (user_id, event_id, event_type, data) VALUES (?, ?, ?, ?)`,
 		cle.User.ID, cle.ID, cle.Type, b)

@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Server struct {
 	Hostname  string `json:"hostname"`
 	IPAddress string `json:"ipAddress"`
@@ -12,8 +14,11 @@ type Client struct {
 }
 
 type List struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Title     string    `json:"title"`
+	Users     []string  `json:"users"`
 }
 
 type User struct {

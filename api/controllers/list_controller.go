@@ -36,7 +36,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		return errors.New("Failed to create UUID")
 	}
 
-	event.Data.List.ID = listID.String()
+	event.Data.ID = listID.String()
 
 	if apiCfg == nil {
 		return errors.New("apiCfg cannot be nil")
