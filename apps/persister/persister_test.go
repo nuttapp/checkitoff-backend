@@ -27,7 +27,7 @@ func TestMain_Integration(t *testing.T) {
 			ID:   gocql.TimeUUID().String(),
 			Type: m.CreateListMsgType,
 		},
-		Data: m.CreateListMsgData{
+		Data: m.List{
 			ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
 			Title: "Trader Joes",
 		},

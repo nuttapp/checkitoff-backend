@@ -10,29 +10,22 @@ import (
 )
 
 type CreateListMsg struct {
+	EventFields
 	Server Server `json:"server"`
 	Client Client `json:"client"`
 	User   User   `json:"user"`
-	EventFields
-	Data CreateListMsgData `json:"data"`
+	Data   List   `json:"data"`
 }
 
 type UpdateListMsg struct {
+	EventFields
 	Server Server `json:"server"`
 	Client Client `json:"client"`
 	User   User   `json:"user"`
-	EventFields
-	Data CreateListMsgData `json:"data"`
+	Data   List   `json:"data"`
 }
 
-// updates fields of a particular list
-type UpdateListMsgData struct {
-	ID    *string
-	Title *string
-	Users *[]string
-}
-
-// CreateListMsgData wraps any fields specific to this event
+// List wraps any fields specific to this event
 type CreateListMsgData struct {
 	ID        string
 	CreatedAt time.Time
@@ -48,7 +41,7 @@ func NewCreateListMsg() CreateListMsg {
 			Type: CreateListMsgType,
 			ID:   gocql.TimeUUID().String(),
 		},
-		Data: CreateListMsgData{
+		Data: List{
 			CreatedAt: createdAt,
 			UpdatedAt: createdAt,
 		},

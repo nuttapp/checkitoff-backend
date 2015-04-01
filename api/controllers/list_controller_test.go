@@ -56,7 +56,7 @@ func Test_ListController_Unit(t *testing.T) {
 			EventFields: m.EventFields{
 				Type: "create-list-event",
 			},
-			Data: m.CreateListMsgData{
+			Data: m.List{
 				Title: "Trader Joes",
 			},
 		}

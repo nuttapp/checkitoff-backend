@@ -31,7 +31,7 @@ func Test_CreateListMsg_unit(t *testing.T) {
 			User: User{
 				ID: "create-list-msg-user-id",
 			},
-			Data: CreateListMsgData{
+			Data: List{
 				ID:    "create-list-msg-list-id",
 				Title: "create-list-msg-list-title",
 			},
