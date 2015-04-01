@@ -25,15 +25,6 @@ type UpdateListMsg struct {
 	Data   List   `json:"data"`
 }
 
-// List wraps any fields specific to this event
-type CreateListMsgData struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Title     string
-	Users     []string
-}
-
 func NewCreateListMsg() CreateListMsg {
 	createdAt := time.Now().UTC()
 	return CreateListMsg{
