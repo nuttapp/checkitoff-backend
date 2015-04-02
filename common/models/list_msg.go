@@ -35,7 +35,8 @@ const (
 	MsgMethodPatch  = "patch"
 	MsgMethodDelete = "delete"
 
-	MsgResourceList = "list"
+	MsgResourceList     = "list"
+	MsgResourceListItem = "list-item"
 )
 
 type CreateListMsg struct {
