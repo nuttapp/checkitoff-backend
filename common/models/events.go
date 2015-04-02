@@ -27,7 +27,7 @@ type Event interface {
 }
 
 // ValidateEvent examples the fields that every event needs and throws an error if they're blank
-func ValidateEvent(c *Client, u *User, e *Msg, s *Server) error {
+func ValidateMsg(c *Client, u *User, e *Msg, s *Server) error {
 	if len(c.ID) == 0 {
 		return errors.New(MissingClientIDError)
 	}
