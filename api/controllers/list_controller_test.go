@@ -12,6 +12,8 @@ import (
 
 var createListEventJSON = []byte(`
 	{
+		"method":  "create",
+		"resource": "list",
 		"client": {
 			"id": "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 			"deviceType": "iPhone",
@@ -23,9 +25,7 @@ var createListEventJSON = []byte(`
 		},
 		"data": {
 			"title": "Trader Joes"
-		},
-		"method":  "create",
-		"resource": "list"
+		}
 	}`)
 
 var apiCfg = &config.Config{
