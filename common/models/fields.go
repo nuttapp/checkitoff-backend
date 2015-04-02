@@ -26,7 +26,7 @@ type User struct {
 	Name string `json:"name"`
 }
 
-type EventFields struct {
+type Msg struct {
 	Method   string `json:"method"`
 	Resource string `json:"resource"`
 	ID       string `json:"id"`

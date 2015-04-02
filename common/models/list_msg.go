@@ -39,7 +39,7 @@ const (
 )
 
 type CreateListMsg struct {
-	EventFields
+	Msg
 	Server Server `json:"server"`
 	Client Client `json:"client"`
 	User   User   `json:"user"`
@@ -47,7 +47,7 @@ type CreateListMsg struct {
 }
 
 type UpdateListMsg struct {
-	EventFields
+	Msg
 	Server Server `json:"server"`
 	Client Client `json:"client"`
 	User   User   `json:"user"`
@@ -57,7 +57,7 @@ type UpdateListMsg struct {
 func NewCreateListMsg() CreateListMsg {
 	createdAt := time.Now().UTC()
 	return CreateListMsg{
-		EventFields: EventFields{
+		Msg: Msg{
 			Method:   MsgMethodCreate,
 			Resource: MsgResourceList,
 			ID:       gocql.TimeUUID().String(),
@@ -80,7 +80,7 @@ func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
 }
 
 func (e *CreateListMsg) IsReadyToBeSaved() error {
-	err := ValidateEvent(&e.Client, &e.User, &e.EventFields, &e.Server)
+	err := ValidateEvent(&e.Client, &e.User, &e.Msg, &e.Server)
 	if err != nil {
 		return err
 	}

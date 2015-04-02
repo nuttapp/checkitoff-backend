@@ -16,7 +16,7 @@ func Test_CreateListMsg_unit(t *testing.T) {
 	// CreateListMsg.IsReadyToBeSaved()
 	Convey("IsReadyToBeSaved()", t, func() {
 		msg := &CreateListMsg{
-			EventFields: EventFields{
+			Msg: Msg{
 				ID:       "create-list-msg-id",
 				Method:   "create",
 				Resource: "list",

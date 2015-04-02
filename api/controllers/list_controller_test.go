@@ -54,7 +54,7 @@ func Test_ListController_Unit(t *testing.T) {
 				ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 				Name: "test-user-name",
 			},
-			EventFields: m.EventFields{
+			Msg: m.Msg{
 				Method:   "create",
 				Resource: "list",
 			},
