@@ -24,7 +24,8 @@ var createListEventJSON = []byte(`
 		"data": {
 			"title": "Trader Joes"
 		},
-		"type": "create-list"
+		"method":  "create",
+		"resource": "list"
 	}`)
 
 var apiCfg = &config.Config{
@@ -54,7 +55,8 @@ func Test_ListController_Unit(t *testing.T) {
 				Name: "test-user-name",
 			},
 			EventFields: m.EventFields{
-				Type: "create-list-event",
+				Method:   "create",
+				Resource: "list",
 			},
 			Data: m.List{
 				Title: "Trader Joes",
@@ -81,19 +83,26 @@ func Test_ListController_Unit(t *testing.T) {
 			err := ListControllerCreate(b, nil, apiCfg)
 			So(err.Error(), ShouldContainSubstring, m.MissingUserIDError)
 		})
-		Convey("should return error when missing event type", func() {
+		Convey("should return error when missing method", func() {
 			e := cle // create copy
-			e.Type = ""
+			e.Method = ""
 			var b, _ = json.Marshal(e)
 			err := ListControllerCreate(b, nil, apiCfg)
-			So(err.Error(), ShouldContainSubstring, m.MissingEventTypeError)
+			So(err.Error(), ShouldContainSubstring, m.MissingMsgMethodError)
 		})
-		Convey("should return error when invalid event type", func() {
+		Convey("should return error when missing resource", func() {
 			e := cle // create copy
-			e.Type = "poop"
+			e.Resource = ""
 			var b, _ = json.Marshal(e)
 			err := ListControllerCreate(b, nil, apiCfg)
-			So(err.Error(), ShouldContainSubstring, m.InvalidEventTypeError)
+			So(err.Error(), ShouldContainSubstring, m.MissingMsgResourceError)
+		})
+		Convey("should return error when invalid method", func() {
+			e := cle // create copy
+			e.Method = "poop"
+			var b, _ = json.Marshal(e)
+			err := ListControllerCreate(b, nil, apiCfg)
+			So(err.Error(), ShouldContainSubstring, m.InvalidMsgMethodError)
 		})
 		Convey("should return error when missing list title", func() {
 			e := cle // create copy

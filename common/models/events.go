@@ -5,21 +5,21 @@ import "errors"
 const (
 	// Catch fat finger mistakes where an event type is not equal to it's intended event type
 	// ex: a CreateListMsg should never have an EventType "UpdateListEvent"
-	InvalidEventTypeError = "Invalid event type"
+	InvalidMsgMethodError   = "Invalid msg method"
+	InvalidMsgResourceError = "Invalid msg resource"
 
 	// base event fields
-	MissingClientIDError         = "Client id cannot be empty"
-	MissingClientDeviceTypeError = "Client deviceType cannot be empty"
-	MissingUserIDError           = "User id cannot be empty"
-	MissingEventIDError          = "Event id cannot be empty"
-	MissingEventTypeError        = "Event type cannot be empty"
-	MissingServerHostnameError   = "Server hostname cannot be empty"
-	MissingServerIPAddressError  = "Server ip address cannot be empty"
+	MissingClientIDError         = "Msg client id cannot be empty"
+	MissingClientDeviceTypeError = "Msg client deviceType cannot be empty"
+	MissingUserIDError           = "Msg user id cannot be empty"
+	MissingEventIDError          = "Msg id cannot be empty"
+	MissingMsgMethodError        = "Msg method cannot be empty"
+	MissingMsgResourceError      = "Msg resource cannot be empty"
+	MissingServerHostnameError   = "Msg server hostname cannot be empty"
+	MissingServerIPAddressError  = "Msg server ip address cannot be empty"
 
 	MissingListIDError    = "List id cannot be emtpy"
 	MissingListTitleError = "List title cannot be empty"
-
-	CreateListMsgType = "create-list"
 )
 
 type Event interface {
@@ -37,8 +37,11 @@ func ValidateEvent(c *Client, u *User, e *EventFields, s *Server) error {
 	if len(u.ID) == 0 {
 		return errors.New(MissingUserIDError)
 	}
-	if len(e.Type) == 0 {
-		return errors.New(MissingEventTypeError)
+	if len(e.Method) == 0 {
+		return errors.New(MissingMsgMethodError)
+	}
+	if len(e.Resource) == 0 {
+		return errors.New(MissingMsgResourceError)
 	}
 	if len(e.ID) == 0 {
 		return errors.New(MissingEventIDError)

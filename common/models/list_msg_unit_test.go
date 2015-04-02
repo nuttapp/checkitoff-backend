@@ -17,8 +17,9 @@ func Test_CreateListMsg_unit(t *testing.T) {
 	Convey("IsReadyToBeSaved()", t, func() {
 		msg := &CreateListMsg{
 			EventFields: EventFields{
-				ID:   "create-list-msg-id",
-				Type: CreateListMsgType,
+				ID:       "create-list-msg-id",
+				Method:   "create",
+				Resource: "list",
 			},
 			Server: Server{
 				Hostname:  "create-list-msg-server-hostname",
@@ -60,11 +61,11 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
 			})
-			Convey("name of message is wrong", func() {
-				msg.Type = "invalid-name-for-create-msg"
+			Convey("resource is not a list", func() {
+				msg.Resource = "invalid resource"
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldContainSubstring, InvalidEventTypeError)
+				So(err.Error(), ShouldContainSubstring, InvalidMsgResourceError)
 			})
 		})
 	})

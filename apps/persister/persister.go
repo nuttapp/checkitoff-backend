@@ -55,10 +55,11 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 		fmt.Println("Failed to unmarshal JSON from NSQ message: %s", err)
 	}
 
-	fmt.Printf("RECV msg: %s, %s \n", j["type"], j["id"])
+	cmd := fmt.Sprintf("%s-%s", j["method"], j["resource"])
+	fmt.Printf("RECV msg: %s, %s \n", cmd, j["id"])
 
-	switch j["type"] {
-	case m.CreateListMsgType:
+	switch cmd {
+	case "create-list":
 		cle, err := m.DeserializeCreateListMsg(msg.Body)
 		if err != nil {
 			return err
@@ -105,15 +106,16 @@ func SaveCreateListMsg(cle *m.CreateListMsg) error {
 		return err
 	}
 
+	msgType := fmt.Sprintf("%s-%s", cle.Method, cle.Resource)
 	insertListEvent := session.Query(`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
-		cle.Data.ID, cle.User.ID, cle.ID, cle.Type, b)
+		cle.Data.ID, cle.User.ID, cle.ID, msgType, b)
 	err = insertListEvent.Exec()
 	if err != nil {
 		return err
 	}
 
 	insertUserTimeline := session.Query(`INSERT INTO user_timeline (user_id, event_id, event_type, data) VALUES (?, ?, ?, ?)`,
-		cle.User.ID, cle.ID, cle.Type, b)
+		cle.User.ID, cle.ID, msgType, b)
 	err = insertUserTimeline.Exec()
 	if err != nil {
 		return err
