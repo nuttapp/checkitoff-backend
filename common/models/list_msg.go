@@ -91,10 +91,10 @@ func (e *CreateListMsg) IsReadyToBeSaved() error {
 	if len(e.Data.Title) == 0 {
 		return errors.New(MissingListTitleError)
 	}
-	if e.Method != "create" {
+	if e.Method != MsgMethodCreate {
 		return errors.New(InvalidMsgMethodError)
 	}
-	if e.Resource != "list" {
+	if e.Resource != MsgResourceList {
 		return errors.New(InvalidMsgResourceError)
 	}
 	return nil
