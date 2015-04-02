@@ -61,7 +61,13 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
 			})
-			Convey("resource is not a list", func() {
+			Convey("msg method is not valid", func() {
+				msg.Method = "invalid method type"
+				err := msg.IsReadyToBeSaved()
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldContainSubstring, InvalidMsgMethodError)
+			})
+			Convey("msg resource is not \"list\"", func() {
 				msg.Resource = "invalid resource"
 				err := msg.IsReadyToBeSaved()
 				So(err, ShouldNotBeNil)
