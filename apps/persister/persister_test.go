@@ -25,8 +25,8 @@ func TestMain_Integration(t *testing.T) {
 		},
 		EventFields: m.EventFields{
 			ID:       gocql.TimeUUID().String(),
-			Method:   "create",
-			Resource: "list",
+			Method:   m.MsgMethodCreate,
+			Resource: m.MsgResourceList,
 		},
 		Data: m.List{
 			ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
