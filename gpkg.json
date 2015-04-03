@@ -1,0 +1,36 @@
+{
+    "name":        "checkitoff-backend",
+    "desc":        "Backend for the Check it off iOS app",
+    "homepage":    "http://github.com/nuttapp/checkitoff-backend",
+    "keywords":    ["checkitoff"],
+    "version":     "0.0.1",
+    "main":        "main.go",
+    "bin":         ["perister", "api", "logger"],
+    "go_compat":   ">=1.4",
+    "os_compat":   ["darwin", "linux", "!win"],
+    "ar_compat":   ["x86", "x64", "!arm"],
+    "authors":     ["Greg Ingelmo <git@ingelmo.org>"],
+    "maintainers": ["Greg Ingelmo <git@ingelmo.org>"],
+    "repo": { 
+       "type" : "git",
+       "url" : "http://github.com/nuttapp/checkitoff-backend"
+    },
+    "bugs": { 
+        "url":   "http://github.com/nuttapp/checkitoff-backend/issues",
+        "email": "git@ingelmo.org"
+    },
+    "dependencies": {
+        "github.com/bolt/bolt": "master"
+    },
+    "devDependencies": {
+        "gpkg": "1.2"
+    },
+    "license": "Artistic-2.0",
+    "versions": {
+        "0.0.2": "tag#v0.0.2",
+        "0.0.1": "sha#2a1d43fe566cfa862936ee764c5c1acc5a73ed7c"
+    },
+    "gpkg": {
+        "reserved": "for golang package manager"
+    }
+}
