@@ -9,7 +9,7 @@ import (
 )
 
 func TestMain_Integration(t *testing.T) {
-	var cle = &m.CreateListMsg{
+	var cle = &m.ListMsg{
 		Server: m.Server{
 			Hostname:  "localhost",
 			IPAddress: "127.0.0.1",

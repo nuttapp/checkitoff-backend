@@ -76,7 +76,7 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 	return nil
 }
 
-func SaveInviteUserToListEvent() {
+func SaveInviteUserToListMsg() {
 	// addToSetQuery := session.Query(`UPDATE list SET users = users + {'blah2'} WHERE list_id = ?`, cle.EventData.ID)
 	// err = addToSetQuery.Exec()
 	// if err != nil {
@@ -84,7 +84,7 @@ func SaveInviteUserToListEvent() {
 	// }
 }
 
-func SaveCreateListMsg(cle *m.CreateListMsg) error {
+func SaveCreateListMsg(cle *m.ListMsg) error {
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "demodb"
 	cluster.Consistency = gocql.Quorum
@@ -107,9 +107,9 @@ func SaveCreateListMsg(cle *m.CreateListMsg) error {
 	}
 
 	msgType := fmt.Sprintf("%s-%s", cle.Method, cle.Resource)
-	insertListEvent := session.Query(`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
+	insertListMsg := session.Query(`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
 		cle.Data.ID, cle.User.ID, cle.ID, msgType, b)
-	err = insertListEvent.Exec()
+	err = insertListMsg.Exec()
 	if err != nil {
 		return err
 	}

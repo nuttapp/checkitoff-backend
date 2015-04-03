@@ -8,7 +8,7 @@ import (
 
 func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 	Convey("DeserializeCreateListMsg()", t, func() {
-		var createListEventJSON = []byte(`
+		var createListMsgJSON = []byte(`
 			{
 				"method":  "create",
 				"resource": "list",
@@ -32,7 +32,7 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			}`)
 
 		Convey("should deserialize json into CreateListMsg", func() {
-			msg, err := DeserializeCreateListMsg(createListEventJSON)
+			msg, err := DeserializeCreateListMsg(createListMsgJSON)
 
 			So(err, ShouldBeNil)
 			So(msg, ShouldNotBeNil)
@@ -65,7 +65,7 @@ func Test_CreateListMsg_unit(t *testing.T) {
 
 	// CreateListMsg.IsReadyToBeSaved()
 	Convey("IsReadyToBeSaved()", t, func() {
-		msg := &CreateListMsg{
+		msg := &ListMsg{
 			Msg: Msg{
 				ID:       "create-list-msg-id",
 				Method:   "create",

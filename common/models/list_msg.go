@@ -39,7 +39,7 @@ const (
 	MsgResourceListItem = "list-item"
 )
 
-type CreateListMsg struct {
+type ListMsg struct {
 	Msg
 	Server Server `json:"server"`
 	Client Client `json:"client"`
@@ -47,9 +47,9 @@ type CreateListMsg struct {
 	Data   List   `json:"data"`
 }
 
-func NewCreateListMsg() CreateListMsg {
+func NewCreateListMsg() ListMsg {
 	createdAt := time.Now().UTC()
-	return CreateListMsg{
+	return ListMsg{
 		Msg: Msg{
 			Method:   MsgMethodCreate,
 			Resource: MsgResourceList,
@@ -63,8 +63,8 @@ func NewCreateListMsg() CreateListMsg {
 }
 
 // DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
-func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
-	var event CreateListMsg
+func DeserializeCreateListMsg(jsonText []byte) (*ListMsg, error) {
+	var event ListMsg
 	err := json.Unmarshal(jsonText, &event)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func DeserializeCreateListMsg(jsonText []byte) (*CreateListMsg, error) {
 	return &event, nil
 }
 
-func (e *CreateListMsg) IsReadyToBeSaved() error {
+func (e *ListMsg) IsReadyToBeSaved() error {
 	err := ValidateMsg(&e.Client, &e.User, &e.Msg, &e.Server)
 	if err != nil {
 		return err

@@ -71,7 +71,7 @@ func Test_Models_unit(t *testing.T) {
 		})
 		//
 		// Convey("Should deserialize json into CreateListMsg", t, func() {
-		// 	event, err := m.DeserializeCreateListMsg(createListEventJSON)
+		// 	event, err := m.DeserializeCreateListMsg(createListMsgJSON)
 		// 	// fmt.Println(util.ToJSON(event))
 		//
 		// 	So(event, ShouldNotBeNil)

@@ -10,7 +10,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var createListEventJSON = []byte(`
+var createListMsgJSON = []byte(`
 	{
 		"method":  "create",
 		"resource": "list",
@@ -37,14 +37,14 @@ var apiCfg = &config.Config{
 func Test_ListController_Integration(t *testing.T) {
 	Convey("Should enqueue CreateListMsg on NSQ", t, func() {
 		nsqCfg := nsq.NewConfig()
-		err := ListControllerCreate(createListEventJSON, nsqCfg, apiCfg)
+		err := ListControllerCreate(createListMsgJSON, nsqCfg, apiCfg)
 		So(err, ShouldEqual, nil)
 	})
 }
 
 func Test_ListController_Unit(t *testing.T) {
 	Convey("ListControllerCreate", t, func() {
-		var cle = m.CreateListMsg{
+		var cle = m.ListMsg{
 			Client: m.Client{
 				ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 				DeviceType: "iPhone",
@@ -132,7 +132,7 @@ func Test_ListController_Unit(t *testing.T) {
 	})
 
 	Convey("Should deserialize json into CreateListMsg", t, func() {
-		event, err := m.DeserializeCreateListMsg(createListEventJSON)
+		event, err := m.DeserializeCreateListMsg(createListMsgJSON)
 		// fmt.Println(util.ToJSON(event))
 
 		So(event, ShouldNotBeNil)

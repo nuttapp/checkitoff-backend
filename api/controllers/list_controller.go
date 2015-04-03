@@ -23,7 +23,7 @@ const (
 )
 
 func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
-	var event m.CreateListMsg
+	var event m.ListMsg
 	err := json.Unmarshal(jsonText, &event)
 	if err != nil {
 		return util.NewError(CreateListMsgJSONUnmarshalError, err)
