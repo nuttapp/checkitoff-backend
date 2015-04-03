@@ -53,7 +53,7 @@ func ValidateMsg(c *Client, u *User, e *Msg, s *Server) error {
 		return errors.New(MissingMsgResourceError)
 	}
 	if len(e.ID) == 0 {
-		return errors.New(MissingEventIDError)
+		return errors.New(MissingMsgIDError)
 	}
 	if len(s.Hostname) == 0 {
 		return errors.New(MissingServerHostnameError)

@@ -1,16 +1,14 @@
 package models
 
 const (
-	// Catch fat finger mistakes where an event type is not equal to it's intended event type
-	// ex: a CreateListMsg should never have an EventType "UpdateListEvent"
 	InvalidMsgMethodError   = "Invalid msg method"
 	InvalidMsgResourceError = "Invalid msg resource"
 
-	// base event fields
+	// base msg fields
 	MissingClientIDError         = "Msg client id cannot be empty"
 	MissingClientDeviceTypeError = "Msg client deviceType cannot be empty"
 	MissingUserIDError           = "Msg user id cannot be empty"
-	MissingEventIDError          = "Msg id cannot be empty"
+	MissingMsgIDError            = "Msg id cannot be empty"
 	MissingMsgMethodError        = "Msg method cannot be empty"
 	MissingMsgResourceError      = "Msg resource cannot be empty"
 	MissingServerHostnameError   = "Msg server hostname cannot be empty"
