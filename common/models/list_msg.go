@@ -47,14 +47,6 @@ type CreateListMsg struct {
 	Data   List   `json:"data"`
 }
 
-type UpdateListMsg struct {
-	Msg
-	Server Server `json:"server"`
-	Client Client `json:"client"`
-	User   User   `json:"user"`
-	Data   List   `json:"data"`
-}
-
 func NewCreateListMsg() CreateListMsg {
 	createdAt := time.Now().UTC()
 	return CreateListMsg{
