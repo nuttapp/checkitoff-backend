@@ -31,7 +31,7 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 				}
 			}`)
 
-		Convey("Should deserialize json into CreateListMsg", func() {
+		Convey("should deserialize json into CreateListMsg", func() {
 			msg, err := DeserializeCreateListMsg(createListEventJSON)
 
 			So(err, ShouldBeNil)
@@ -47,6 +47,11 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			So(msg.User.Name, ShouldEqual, "Greg")
 			So(msg.Data.ID, ShouldEqual, "12345")
 			So(msg.Data.Title, ShouldEqual, "Trader Joes")
+		})
+		Convey("should return error with invalid json", func() {
+			msg, err := DeserializeCreateListMsg([]byte("asdf"))
+			So(err, ShouldNotBeNil)
+			So(msg, ShouldBeNil)
 		})
 	})
 }
