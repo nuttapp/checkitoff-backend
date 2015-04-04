@@ -35,6 +35,10 @@ const (
 	MsgMethodPatch  = "patch"
 	MsgMethodDelete = "delete"
 
+	// for list items
+	MsgMethodCheck   = "check"
+	MsgMethodUncheck = "uncheck"
+
 	MsgResourceList     = "list"
 	MsgResourceListItem = "list-item"
 )
