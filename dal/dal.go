@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gocql/gocql"
-	m "github.com/nuttapp/checkitoff-backend/common/models"
+	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
 type DALCfg struct {
@@ -53,18 +53,28 @@ func (d *DAL) initSession() error {
 	return nil
 }
 
-func (d *DAL) SaveCreateListMsg(msg *m.ListMsg) error {
+func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 	err := d.initSession()
 	if err != nil {
 		return err
 	}
+
+	switch msg.Method {
+	case m.MsgMethodCreate:
+		return d.CreateList(msg)
+
+	}
+	return nil
+}
+
+func (d *DAL) CreateList(msg *m.ListMsg) error {
 	createdAt := gocql.TimeUUID()
 	updatedAt := gocql.TimeUUID()
 
 	insertList := d.session.Query(
 		`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
 		msg.Data.ID, msg.Data.Title, createdAt, updatedAt, []string{msg.User.ID})
-	err = insertList.Exec()
+	err := insertList.Exec()
 	if err != nil {
 		return err
 	}
@@ -92,4 +102,5 @@ func (d *DAL) SaveCreateListMsg(msg *m.ListMsg) error {
 	}
 
 	return nil
+
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/bitly/go-nsq"
 	"github.com/gocql/gocql"
 	"github.com/nuttapp/checkitoff-backend/common"
-	m "github.com/nuttapp/checkitoff-backend/common/models"
+	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
 func main() {

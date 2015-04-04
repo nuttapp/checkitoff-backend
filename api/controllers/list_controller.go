@@ -7,8 +7,8 @@ import (
 	"github.com/bitly/go-nsq"
 	"github.com/gocql/gocql"
 	"github.com/nuttapp/checkitoff-backend/api/config"
-	m "github.com/nuttapp/checkitoff-backend/common/models"
 	"github.com/nuttapp/checkitoff-backend/common/util"
+	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gocql/gocql"
-	m "github.com/nuttapp/checkitoff-backend/common/models"
+	m "github.com/nuttapp/checkitoff-backend/dal/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
