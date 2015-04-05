@@ -69,14 +69,9 @@ func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 }
 
 func (d *DAL) CreateList(msg *m.ListMsg) error {
-	createdAt := gocql.TimeUUID()
-	updatedAt := gocql.TimeUUID()
-
-	// fmt.Printf("session: %s\n", d.session)
-
 	insertList := d.session.Query(
 		`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
-		msg.Data.ID, msg.Data.Title, createdAt, updatedAt, []string{msg.User.ID})
+		msg.Data.ID, msg.Data.Title, msg.Data.CreatedAt, msg.Data.UpdatedAt, []string{msg.User.ID})
 	err := insertList.Exec()
 	if err != nil {
 		return err
@@ -105,5 +100,11 @@ func (d *DAL) CreateList(msg *m.ListMsg) error {
 	}
 
 	return nil
+}
 
+func (d *DAL) UpdateList(msg *m.ListMsg) error {
+	if len(msg.ID) == 0 {
+		return fmt.Errorf("DAL.UpdateList: %s", m.MissingListIDError)
+	}
+	return nil
 }
