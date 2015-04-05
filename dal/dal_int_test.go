@@ -20,7 +20,7 @@ func Test_DAL_List(t *testing.T) {
 	Convey("List", t, func() {
 		So(err, ShouldBeNil)
 
-		var cle = &m.ListMsg{
+		var msg = &m.ListMsg{
 			Server: m.Server{
 				Hostname:  "localhost",
 				IPAddress: "127.0.0.1",
@@ -47,9 +47,19 @@ func Test_DAL_List(t *testing.T) {
 
 		So(d, ShouldNotBeNil)
 
-		Convey("Should save to database", func() {
+		Convey("save", func() {
+			d.CreateList(msg)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("update", func() {
+			d.CreateList(msg)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("delete", func() {
 			// err := SaveCreateListMsg(cle)
-			d.CreateList(cle)
+			d.CreateList(msg)
 			So(err, ShouldBeNil)
 		})
 	})
