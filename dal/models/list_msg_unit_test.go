@@ -29,7 +29,8 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 					"id": "12345",
 					"title": "Trader Joes",
 					"category": "shopping",
-					"isHidden": true
+					"isHidden": true,
+					"users": ["greg", "jess"]
 				}
 			}`)
 
