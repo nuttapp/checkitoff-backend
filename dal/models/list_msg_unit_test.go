@@ -27,7 +27,9 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 				},
 				"data": {
 					"id": "12345",
-					"title": "Trader Joes"
+					"title": "Trader Joes",
+					"category": "shopping",
+					"isHidden": true
 				}
 			}`)
 
@@ -47,6 +49,8 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			So(msg.User.Name, ShouldEqual, "Greg")
 			So(msg.Data.ID, ShouldEqual, "12345")
 			So(msg.Data.Title, ShouldEqual, "Trader Joes")
+			So(msg.Data.IsHidden, ShouldEqual, true)
+			So(msg.Data.Category, ShouldEqual, "shopping")
 		})
 		Convey("should return error with invalid json", func() {
 			msg, err := DeserializeCreateListMsg([]byte("asdf"))
@@ -83,8 +87,10 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				ID: "create-list-msg-user-id",
 			},
 			Data: List{
-				ID:    "create-list-msg-list-id",
-				Title: "create-list-msg-list-title",
+				ID:       "create-list-msg-list-id",
+				Title:    "create-list-msg-list-title",
+				Category: "shopping",
+				IsHidden: false,
 			},
 		}
 

@@ -17,34 +17,55 @@ USE demodb;
 --
 -- list
 --
-
+USE demodb;
 DROP TABLE list;
 CREATE TABLE list (
     list_id uuid,
+    category varchar,
     title varchar,
+    users set<varchar>,
+    is_hidden boolean,
     created_at timeuuid,
     updated_at timeuuid,
-    users set<varchar>,
     PRIMARY KEY (list_id)
 );
-INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'Trader Joes', now(), now(), {'1', '2'} );
-INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (62c36092-82a1-3a00-93d1-46196ee77205, 'Trader Joes', now(), now(), {'10', '11'});
+INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'task', 'Today', now(), now(), {'greg', 'jess'}, false );
+INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77205, 'shopping', 'Trader Joes', now(), now(), {'greg', 'jess'}, false);
 
-UPDATE list SET users = users + {'4'} WHERE list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
+UPDATE list SET category = 'task', title = 'updated title' WHERE list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
+UPDATE list SET users = users + {'son'} WHERE list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
 
-SELECT list_id, title, created_at, updated_at, users FROM list;
+DELETE FROM List where list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
 
--- DELETE FROM list WHERE accountId = 3BF39D34-4622-4FE8-89F1-1E56B875A50E
--- and list_id = 62c36092-82a1-3a00-93d1-46196ee77205 ;
+DROP INDEX list_users_idx;
+CREATE INDEX list_users_idx ON demodb.list (users);
+
+select * from list where users contains 'greg';
+
+SELECT list_id, category, title, dateOf(created_at) as created_at, dateOf(updated_at) as updated_at, users, is_hidden FROM list;
+
+--
+-- list
+--
+USE demodb;
+DROP TABLE list_item;
+CREATE TABLE list_item (
+    list_id uuid,
+    list_item_id uuid,
+    title varchar,
+    photo varchar,
+    is_hidden boolean,
+    created_at timeuuid,
+    updated_at timeuuid,
+    PRIMARY KEY (list_id, title, list_item_id)
+);
+
+
 
 -- DROP INDEX list_category_idx;
 -- CREATE INDEX list_category_idx ON demodb.list (category);
 
-DROP INDEX list_users_idx;
-CREATE INDEX list_users_idx ON demodb.list (users);
-select * from list where users contains '1';
 
-SELECT * FROM list; --WHERE accountId = 3BF39D34-4622-4FE8-89F1-1E56B875A50E;
 
 -------------------------------------------------------- 
 -- list_event - Stores create, update, delete history, 

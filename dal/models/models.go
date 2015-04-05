@@ -40,11 +40,12 @@ type Client struct {
 
 type List struct {
 	ID        string    `json:"id"`
+	Category  string    `json:"category"`
+	Title     string    `json:"title"`
+	Users     []string  `json:"users"`
+	IsHidden  bool      `json:"isHidden"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Title     string    `json:"title"`
-	Category  string    `json:"category"`
-	Users     []string  `json:"users"`
 }
 
 type User struct {
