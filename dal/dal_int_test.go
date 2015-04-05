@@ -48,7 +48,7 @@ func Test_DAL_List(t *testing.T) {
 		So(d, ShouldNotBeNil)
 
 		Convey("save", func() {
-			d.CreateList(msg)
+			err = d.CreateList(msg)
 			So(err, ShouldBeNil)
 		})
 
