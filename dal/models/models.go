@@ -39,6 +39,7 @@ type List struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Title     string    `json:"title"`
+	Category  string    `json:"category"`
 	Users     []string  `json:"users"`
 }
 
