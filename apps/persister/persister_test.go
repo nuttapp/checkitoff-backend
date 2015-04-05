@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	"github.com/gocql/gocql"
+	"github.com/nuttapp/checkitoff-backend/dal"
 	m "github.com/nuttapp/checkitoff-backend/dal/models"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -34,15 +36,25 @@ func TestMain_Integration(t *testing.T) {
 		},
 	}
 
+	cfg := dal.DALCfg{
+		Hosts:       []string{"127.0.0.1"},
+		Keyspace:    "demodb",
+		Consistency: gocql.Quorum,
+	}
+
 	Convey("SaveCreateListMsg", t, func() {
-		cluster := gocql.NewCluster("127.0.0.1")
-		cluster.Keyspace = "demodb"
-		cluster.Consistency = gocql.Quorum
-		session, _ := cluster.CreateSession()
-		defer session.Close()
+		d, err := dal.NewDAL(cfg)
+		So(err, ShouldBeNil)
+
+		// cluster := gocql.NewCluster("127.0.0.1")
+		// cluster.Keyspace = "demodb"
+		// cluster.Consistency = gocql.Quorum
+		// session, _ := cluster.CreateSession()
+		// defer session.Close()
 
 		Convey("Should save to database", func() {
-			err := SaveCreateListMsg(cle)
+			// err := SaveCreateListMsg(cle)
+			d.HandleListMsg(cle)
 			So(err, ShouldBeNil)
 		})
 	})

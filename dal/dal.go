@@ -38,16 +38,17 @@ func (d *DAL) initSession() error {
 	if len(d.Cfg.Keyspace) == 0 {
 		return errors.New("No keyspace was provided")
 	}
-
-	if d == nil {
+	if d.session == nil {
 		cluster := gocql.NewCluster(d.Cfg.Hosts...)
 		cluster.Keyspace = d.Cfg.Keyspace
 		cluster.Consistency = d.Cfg.Consistency
 
 		session, err := cluster.CreateSession()
+		// fmt.Println(session)
 		if err != nil {
 			return err
 		}
+		// fmt.Printf("session: %s\n", session)
 		d.session = session
 	}
 	return nil
@@ -70,6 +71,8 @@ func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 func (d *DAL) CreateList(msg *m.ListMsg) error {
 	createdAt := gocql.TimeUUID()
 	updatedAt := gocql.TimeUUID()
+
+	// fmt.Printf("session: %s\n", d.session)
 
 	insertList := d.session.Query(
 		`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
