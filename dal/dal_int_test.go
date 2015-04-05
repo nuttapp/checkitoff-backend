@@ -40,16 +40,28 @@ func Test_DAL_List(t *testing.T) {
 				Resource: m.MsgResourceList,
 			},
 			Data: m.List{
-				ID:    "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
-				Title: "Trader Joes",
+				ID:       "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
+				Title:    "Trader Joes",
+				Category: "shopping",
+				IsHidden: false,
+				Users:    []string{"0C6B2206-CAD1-4F9C-BE17-74977A257877"},
 			},
 		}
 
 		So(d, ShouldNotBeNil)
 
-		Convey("save", func() {
+		Convey("save/get", func() {
 			err = d.CreateList(msg)
 			So(err, ShouldBeNil)
+
+			list, err := d.GetList(msg)
+			So(err, ShouldBeNil)
+			So(list, ShouldNotBeNil)
+			So(msg.Data.ID, ShouldEqual, "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A")
+			So(msg.Data.Title, ShouldEqual, "Trader Joes")
+			So(msg.Data.Category, ShouldEqual, "shopping")
+			So(msg.Data.IsHidden, ShouldEqual, false)
+			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
 		})
 
 		Convey("update", func() {
