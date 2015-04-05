@@ -68,6 +68,37 @@ func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 	return nil
 }
 
+func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
+	var id gocql.UUID
+	var category string
+	var title string
+	var users []string
+	var isHidden bool
+	var createdAt gocql.UUID
+	var updatedAt gocql.UUID
+
+	q := d.session.Query(
+		`SELECT list_id, category, title, users, is_hidden, created_at, updated_at
+		 FROM list 
+		 WHERE list_id = ? LIMIT 1`, msg.Data.ID)
+
+	err := q.Scan(&id, &category, &title, &users, &isHidden, &createdAt, &updatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	list := &m.List{
+		ID:        id.String(),
+		Category:  category,
+		Title:     title,
+		Users:     users,
+		CreatedAt: createdAt.Time(),
+		UpdatedAt: updatedAt.Time(),
+	}
+
+	return list, nil
+}
+
 func (d *DAL) CreateList(msg *m.ListMsg) error {
 	insertList := d.session.Query(
 		`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
