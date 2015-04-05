@@ -33,7 +33,7 @@ const (
 	MsgMethodPatch  = "patch"
 	MsgMethodDelete = "delete"
 
-	// for list items
+	// for ListItem
 	MsgMethodCheck   = "check"
 	MsgMethodUncheck = "uncheck"
 
@@ -47,6 +47,7 @@ type ListMsg struct {
 	Client Client `json:"client"`
 	User   User   `json:"user"`
 	Data   List   `json:"data"`
+	Err    error  `json:"error"`
 }
 
 func NewCreateListMsg() ListMsg {
