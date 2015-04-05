@@ -6,21 +6,25 @@ import (
 )
 
 const (
-	InvalidMsgMethodError   = "Invalid msg method"
-	InvalidMsgResourceError = "Invalid msg resource"
+	// Base msg
+	MissingMsgIDError       = "Msg ID cannot be empty"
+	MissingMsgMethodError   = "Msg Method cannot be empty"
+	MissingMsgResourceError = "Msg Resource cannot be empty"
+	InvalidMsgMethodError   = "Invalid msg Method, for the given Resource"
+	InvalidMsgResourceError = "Invalid msg Resource"
 
-	// base msg fields
-	MissingClientIDError         = "Msg client id cannot be empty"
-	MissingClientDeviceTypeError = "Msg client deviceType cannot be empty"
-	MissingUserIDError           = "Msg user id cannot be empty"
-	MissingMsgIDError            = "Msg id cannot be empty"
-	MissingMsgMethodError        = "Msg method cannot be empty"
-	MissingMsgResourceError      = "Msg resource cannot be empty"
-	MissingServerHostnameError   = "Msg server hostname cannot be empty"
-	MissingServerIPAddressError  = "Msg server ip address cannot be empty"
-
-	MissingListIDError    = "List id cannot be emtpy"
-	MissingListTitleError = "List title cannot be empty"
+	// Client
+	MissingClientIDError         = "Msg client ID cannot be empty"
+	MissingClientDeviceTypeError = "Msg client DeviceType cannot be empty"
+	// User
+	MissingUserIDError = "Msg user ID cannot be empty"
+	// Server
+	MissingServerHostnameError  = "Msg server Hostname cannot be empty"
+	MissingServerIPAddressError = "Msg server IPAddress cannot be empty"
+	// List
+	MissingListIDError    = "List ID cannot be emtpy"
+	MissingListTitleError = "List Title cannot be empty"
+	// ListItem
 )
 
 type Server struct {
