@@ -53,7 +53,7 @@ func Test_DAL_List(t *testing.T) {
 		})
 
 		Convey("update", func() {
-			d.CreateList(msg)
+			d.UpdateList(msg)
 			So(err, ShouldBeNil)
 		})
 
