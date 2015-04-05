@@ -6,7 +6,7 @@ import (
 
 	"github.com/bitly/go-nsq"
 	"github.com/gocql/gocql"
-	"github.com/nuttapp/checkitoff-backend/api/config"
+	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 	"github.com/nuttapp/checkitoff-backend/common/util"
 	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
