@@ -1,7 +1,6 @@
 package dal
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -101,34 +100,38 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 
 func (d *DAL) CreateList(msg *m.ListMsg) error {
 	insertList := d.session.Query(
-		`INSERT INTO list (list_id, title, created_at, updated_at, users) VALUES (?, ?, ?, ?, ?)`,
-		msg.Data.ID, msg.Data.Title, msg.Data.CreatedAt, msg.Data.UpdatedAt, []string{msg.User.ID})
+		`INSERT INTO list 
+			(list_id, category, title, users, is_hidden, created_at, updated_at) 
+		VALUES 
+			(?, ?, ?, ?, ?, ?, ?)`,
+		msg.Data.ID, msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
+		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt))
 	err := insertList.Exec()
 	if err != nil {
 		return err
 	}
 
-	b, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
+	// b, err := json.Marshal(msg)
+	// if err != nil {
+	// 	return err
+	// }
 
-	msgType := fmt.Sprintf("%s-%s", msg.Method, msg.Resource)
-	insertListMsg := d.session.Query(
-		`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
-		msg.Data.ID, msg.User.ID, msg.ID, msgType, b)
-	err = insertListMsg.Exec()
-	if err != nil {
-		return err
-	}
-
-	insertUserTimeline := d.session.Query(
-		`INSERT INTO user_timeline (user_id, event_id, event_type, data) VALUES (?, ?, ?, ?)`,
-		msg.User.ID, msg.ID, msgType, b)
-	err = insertUserTimeline.Exec()
-	if err != nil {
-		return err
-	}
+	// msgType := fmt.Sprintf("%s-%s", msg.Method, msg.Resource)
+	// insertListMsg := d.session.Query(
+	// 	`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
+	// 	msg.Data.ID, msg.User.ID, msg.ID, msgType, b)
+	// err = insertListMsg.Exec()
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// insertUserTimeline := d.session.Query(
+	// 	`INSERT INTO user_timeline (user_id, event_id, event_type, data) VALUES (?, ?, ?, ?)`,
+	// 	msg.User.ID, msg.ID, msgType, b)
+	// err = insertUserTimeline.Exec()
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
