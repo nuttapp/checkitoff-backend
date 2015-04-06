@@ -65,8 +65,10 @@ func Test_DAL_List(t *testing.T) {
 		})
 
 		Convey("update", func() {
-			d.UpdateList(msg)
+			msg.Data.Title = "Target😡  "
+			d.CreateList(msg)
 			So(err, ShouldBeNil)
+			So(msg.Data.Title, ShouldEqual, msg.Data.Title)
 		})
 
 		Convey("delete", func() {
