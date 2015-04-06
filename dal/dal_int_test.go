@@ -47,7 +47,7 @@ func Test_DAL_List_int(t *testing.T) {
 		}
 
 		Convey("save/get", func() {
-			err := d.CreateList(msg)
+			err := d.CreateOrUpdateList(msg)
 			So(err, ShouldBeNil)
 
 			list, err := d.GetList(msg)
@@ -62,7 +62,7 @@ func Test_DAL_List_int(t *testing.T) {
 
 		Convey("update/get", func() {
 			msg.Data.Title = "Target😡  "
-			err := d.CreateList(msg)
+			err := d.CreateOrUpdateList(msg)
 			So(err, ShouldBeNil)
 
 			list, err := d.GetList(msg)

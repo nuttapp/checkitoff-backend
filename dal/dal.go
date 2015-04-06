@@ -60,7 +60,7 @@ func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 
 	switch msg.Method {
 	case m.MsgMethodCreate, m.MsgMethodUpdate:
-		return d.CreateList(msg)
+		return d.CreateOrUpdateList(msg)
 
 	}
 	return nil
@@ -97,7 +97,7 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 	return list, nil
 }
 
-func (d *DAL) CreateList(msg *m.ListMsg) error {
+func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
 	insertList := d.session.Query(
 		`UPDATE list SET category = ?, title = ?, users = ?, is_hidden = ?, created_at = ?, updated_at = ?
 		 WHERE list_id = ?`,
