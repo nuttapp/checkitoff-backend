@@ -64,17 +64,25 @@ func Test_DAL_List(t *testing.T) {
 			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
 		})
 
-		Convey("update", func() {
+		Convey("update/get", func() {
 			msg.Data.Title = "Target😡  "
-			d.CreateList(msg)
+			err := d.CreateList(msg)
 			So(err, ShouldBeNil)
+
+			list, err := d.GetList(msg)
+			So(err, ShouldBeNil)
+			So(list, ShouldNotBeNil)
+			So(msg.Data.ID, ShouldEqual, msg.Data.ID)
 			So(msg.Data.Title, ShouldEqual, msg.Data.Title)
+			So(msg.Data.Category, ShouldEqual, msg.Data.Category)
+			So(msg.Data.IsHidden, ShouldEqual, false)
+			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
 		})
 
-		Convey("delete", func() {
-			// err := SaveCreateListMsg(cle)
-			d.CreateList(msg)
-			So(err, ShouldBeNil)
-		})
+		// Convey("delete", func() {
+		// 	// err := SaveCreateListMsg(cle)
+		// 	d.CreateList(msg)
+		// 	So(err, ShouldBeNil)
+		// })
 	})
 }
