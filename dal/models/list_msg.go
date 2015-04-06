@@ -86,7 +86,8 @@ func (e *ListMsg) IsReadyToBeSaved() error {
 	if len(e.Data.Title) == 0 {
 		return errors.New(MissingListTitleError)
 	}
-	if e.Method != MsgMethodCreate {
+	isValidMethod := e.Method == MsgMethodCreate || e.Method == MsgMethodUpdate || e.Method == MsgMethodDelete
+	if !isValidMethod {
 		return errors.New(InvalidMsgMethodError)
 	}
 	if e.Resource != MsgResourceList {
