@@ -100,16 +100,18 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 
 func (d *DAL) CreateList(msg *m.ListMsg) error {
 	insertList := d.session.Query(
-		`INSERT INTO list 
-			(list_id, category, title, users, is_hidden, created_at, updated_at) 
-		VALUES 
-			(?, ?, ?, ?, ?, ?, ?)`,
-		msg.Data.ID, msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
-		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt))
+		`UPDATE list SET category = ?, title = ?, users = ?, is_hidden = ?, created_at = ?, updated_at = ?
+		 WHERE list_id = ?`,
+		msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
+		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt), msg.Data.ID)
 	err := insertList.Exec()
 	if err != nil {
 		return err
 	}
+	// `INSERT INTO list
+	// 	(list_id, category, title, users, is_hidden, created_at, updated_at)
+	// VALUES
+	// 	(?, ?, ?, ?, ?, ?, ?)`,
 
 	// b, err := json.Marshal(msg)
 	// if err != nil {
