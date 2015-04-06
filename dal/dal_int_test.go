@@ -39,7 +39,7 @@ func Test_DAL_List_int(t *testing.T) {
 			},
 			Data: m.List{
 				ID:       "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
-				Title:    "Trader Joes😗",
+				Title:    "Trader Joes😗 ",
 				Category: "shopping",
 				IsHidden: false,
 				Users:    []string{"0C6B2206-CAD1-4F9C-BE17-74977A257877"},
