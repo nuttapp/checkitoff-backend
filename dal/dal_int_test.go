@@ -9,17 +9,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func Test_DAL_List(t *testing.T) {
+func Test_DAL_List_int(t *testing.T) {
 	cfg := DALCfg{
 		Hosts:       []string{"127.0.0.1"},
 		Keyspace:    "demodb",
 		Consistency: gocql.Quorum,
 	}
-	d, err := NewDAL(cfg)
+	d, _ := NewDAL(cfg)
 
 	Convey("List", t, func() {
-		So(err, ShouldBeNil)
-
 		var msg = &m.ListMsg{
 			Server: m.Server{
 				Hostname:  "localhost",
@@ -48,10 +46,8 @@ func Test_DAL_List(t *testing.T) {
 			},
 		}
 
-		So(d, ShouldNotBeNil)
-
 		Convey("save/get", func() {
-			err = d.CreateList(msg)
+			err := d.CreateList(msg)
 			So(err, ShouldBeNil)
 
 			list, err := d.GetList(msg)
@@ -79,10 +75,13 @@ func Test_DAL_List(t *testing.T) {
 			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
 		})
 
-		// Convey("delete", func() {
-		// 	// err := SaveCreateListMsg(cle)
-		// 	d.CreateList(msg)
-		// 	So(err, ShouldBeNil)
-		// })
+		Convey("delete", func() {
+			err := d.DeleteList(msg)
+			So(err, ShouldBeNil)
+
+			list, err := d.GetList(msg)
+			So(err.Error(), ShouldContainSubstring, gocql.ErrNotFound.Error())
+			So(list, ShouldBeNil)
+		})
 	})
 }

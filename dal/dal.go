@@ -2,7 +2,6 @@ package dal
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gocql/gocql"
 	m "github.com/nuttapp/checkitoff-backend/dal/models"
@@ -138,9 +137,11 @@ func (d *DAL) CreateList(msg *m.ListMsg) error {
 	return nil
 }
 
-func (d *DAL) UpdateList(msg *m.ListMsg) error {
-	if len(msg.ID) == 0 {
-		return fmt.Errorf("DAL.UpdateList: %s", m.MissingListIDError)
+func (d *DAL) DeleteList(msg *m.ListMsg) error {
+	insertList := d.session.Query(`DELETE FROM list WHERE list_id = ?`, msg.Data.ID)
+	err := insertList.Exec()
+	if err != nil {
+		return err
 	}
 	return nil
 }
