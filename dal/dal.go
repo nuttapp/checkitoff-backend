@@ -60,7 +60,7 @@ func (d *DAL) HandleListMsg(msg *m.ListMsg) error {
 	}
 
 	switch msg.Method {
-	case m.MsgMethodCreate:
+	case m.MsgMethodCreate, m.MsgMethodUpdate:
 		return d.CreateList(msg)
 
 	}
