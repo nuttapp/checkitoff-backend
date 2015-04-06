@@ -29,6 +29,7 @@ CREATE TABLE list (
     updated_at timeuuid,
     PRIMARY KEY (list_id)
 );
+
 INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'task', 'Today', now(), now(), {'greg', 'jess'}, false );
 INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77205, 'shopping', 'Trader Joes', now(), now(), {'greg', 'jess'}, false);
 
