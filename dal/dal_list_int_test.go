@@ -38,7 +38,7 @@ func Test_DAL_List_int(t *testing.T) {
 				Resource: m.MsgResourceList,
 			},
 			Data: m.List{
-				ID:       "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A",
+				ID:       "00fff6c8-d9f9-43f4-8d11-dff41ab9008a",
 				Title:    "Trader Joes😗 ",
 				Category: "shopping",
 				IsHidden: false,
@@ -53,11 +53,11 @@ func Test_DAL_List_int(t *testing.T) {
 			list, err := d.GetList(msg)
 			So(err, ShouldBeNil)
 			So(list, ShouldNotBeNil)
-			So(msg.Data.ID, ShouldEqual, "00FFF6C8-D9F9-43F4-8D11-DFF41AB9008A")
-			So(msg.Data.Title, ShouldEqual, msg.Data.Title)
-			So(msg.Data.Category, ShouldEqual, msg.Data.Category)
-			So(msg.Data.IsHidden, ShouldEqual, false)
-			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
+			So(list.ID, ShouldEqual, msg.Data.ID)
+			So(list.Title, ShouldEqual, msg.Data.Title)
+			So(list.Category, ShouldEqual, msg.Data.Category)
+			So(list.IsHidden, ShouldEqual, false)
+			So(list.Users, ShouldResemble, msg.Data.Users)
 		})
 
 		Convey("update/get", func() {
@@ -68,11 +68,11 @@ func Test_DAL_List_int(t *testing.T) {
 			list, err := d.GetList(msg)
 			So(err, ShouldBeNil)
 			So(list, ShouldNotBeNil)
-			So(msg.Data.ID, ShouldEqual, msg.Data.ID)
-			So(msg.Data.Title, ShouldEqual, msg.Data.Title)
-			So(msg.Data.Category, ShouldEqual, msg.Data.Category)
-			So(msg.Data.IsHidden, ShouldEqual, false)
-			So(msg.Data.Users, ShouldResemble, msg.Data.Users)
+			So(list.ID, ShouldEqual, msg.Data.ID)
+			So(list.Title, ShouldEqual, msg.Data.Title)
+			So(list.Category, ShouldEqual, msg.Data.Category)
+			So(list.IsHidden, ShouldEqual, false)
+			So(list.Users, ShouldResemble, msg.Data.Users)
 		})
 
 		Convey("delete", func() {
