@@ -63,10 +63,6 @@ func Test_DAL_List_int(t *testing.T) {
 			So(list.Category, ShouldEqual, msg.Data.Category)
 			So(list.IsHidden, ShouldEqual, false)
 			So(list.Users, ShouldResemble, msg.Data.Users)
-			// OnOrBefore because UUID truncates to decimal places of nanosecond precision, for example:
-			// original time       = 2015-04-07T03:34:36.874143331
-			// UUID converted time = 2015-04-07T03:34:36.8741433
-			// So uuid time looks like it occurred before original time
 			So(list.CreatedAt, ShouldHappenOnOrBefore, msg.Data.CreatedAt)
 			So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
 		})
@@ -88,7 +84,7 @@ func Test_DAL_List_int(t *testing.T) {
 			So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
 		})
 
-		SkipConvey("should delete the List", func() {
+		Convey("should delete the List", func() {
 			err := d.DeleteList(msg)
 			So(err, ShouldBeNil)
 
