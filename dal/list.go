@@ -9,6 +9,14 @@ import (
 	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
+func GetListCQL(msg *m.ListMsg) (string, []interface{}) {
+	cql := `SELECT list_id, category, title, users, is_hidden, created_at, updated_at
+			FROM list 
+			WHERE list_id = ? LIMIT 1`
+	params := []interface{}{msg.Data.ID}
+	return cql, params
+}
+
 func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 	var id gocql.UUID
 	var category string
@@ -18,10 +26,8 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 	var createdAt time.Time
 	var updatedAt time.Time
 
-	q := d.session.Query(
-		`SELECT list_id, category, title, users, is_hidden, created_at, updated_at
-		 FROM list 
-		 WHERE list_id = ? LIMIT 1`, msg.Data.ID)
+	cql, params := GetListCQL(msg)
+	q := d.session.Query(cql, params...)
 
 	err := q.Scan(&id, &category, &title, &users, &isHidden, &createdAt, &updatedAt)
 	if err != nil {
