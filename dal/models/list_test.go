@@ -13,6 +13,7 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 				"method":  "create",
 				"resource": "list",
 				"servers": [{
+					"ttl": 1,
 					"hostname": "localhost",
 					"ipAddress": "127.0.0.1"
 				}],
@@ -43,6 +44,7 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			So(msg.Resource, ShouldEqual, "list")
 			So(msg.Servers[0].Hostname, ShouldEqual, "localhost")
 			So(msg.Servers[0].IPAddress, ShouldEqual, "127.0.0.1")
+			So(msg.Servers[0].TTL, ShouldEqual, 1)
 			So(msg.Client.ID, ShouldEqual, "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433")
 			So(msg.Client.DeviceType, ShouldEqual, "iPhone")
 			So(msg.Client.OsVersion, ShouldEqual, "7,2")
