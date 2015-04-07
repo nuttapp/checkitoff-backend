@@ -73,32 +73,6 @@ func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
 	}
-	// `INSERT INTO list
-	// 	(list_id, category, title, users, is_hidden, created_at, updated_at)
-	// VALUES
-	// 	(?, ?, ?, ?, ?, ?, ?)`,
-
-	// b, err := json.Marshal(msg)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// msgType := fmt.Sprintf("%s-%s", msg.Method, msg.Resource)
-	// insertListMsg := d.session.Query(
-	// 	`INSERT INTO list_event (list_id, user_id, event_id, event_type, data) VALUES (?, ?, ?, ?, ?)`,
-	// 	msg.Data.ID, msg.User.ID, msg.ID, msgType, b)
-	// err = insertListMsg.Exec()
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// insertUserTimeline := d.session.Query(
-	// 	`INSERT INTO user_timeline (user_id, event_id, event_type, data) VALUES (?, ?, ?, ?)`,
-	// 	msg.User.ID, msg.ID, msgType, b)
-	// err = insertUserTimeline.Exec()
-	// if err != nil {
-	// 	return err
-	// }
 
 	return nil
 }
