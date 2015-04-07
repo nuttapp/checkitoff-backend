@@ -22,9 +22,11 @@ func Test_Models_unit(t *testing.T) {
 			Method:   "create",
 			Resource: "list",
 		}
-		s := &Server{
-			Hostname:  "localhost",
-			IPAddress: "127.0.0.1",
+		s := []Server{
+			Server{
+				Hostname:  "localhost",
+				IPAddress: "127.0.0.1",
+			},
 		}
 
 		Convey("should return error when missing client id", func() {
@@ -58,13 +60,13 @@ func Test_Models_unit(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, MissingMsgResourceError)
 		})
 		Convey("should return error when missing server hostname", func() {
-			s.Hostname = ""
+			s[0].Hostname = ""
 			err := ValidateMsg(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingServerHostnameError)
 		})
 		Convey("should return error when missing server ip address", func() {
-			s.IPAddress = ""
+			s[0].IPAddress = ""
 			err := ValidateMsg(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingServerIPAddressError)

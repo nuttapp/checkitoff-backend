@@ -42,9 +42,11 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		return errors.New("apiCfg cannot be nil")
 	}
 
-	event.Server.Hostname = apiCfg.Hostname
-	event.Server.IPAddress = apiCfg.IPAddress
-
+	server := m.Server{
+		Hostname:  apiCfg.Hostname,
+		IPAddress: apiCfg.IPAddress,
+	}
+	event.Servers = append(event.Servers, server)
 	err = event.IsReadyToBeSaved()
 	if err != nil {
 		return util.NewError(CreateListMsgValidationError, err)

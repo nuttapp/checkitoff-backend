@@ -17,11 +17,13 @@ func Test_DAL_List_int(t *testing.T) {
 	}
 	d, _ := NewDAL(cfg)
 
-	Convey("List", t, func() {
+	Convey("Given a ListMsg struct", t, func() {
 		var msg = &m.ListMsg{
-			Server: m.Server{
-				Hostname:  "localhost",
-				IPAddress: "127.0.0.1",
+			Servers: []m.Server{
+				m.Server{
+					Hostname:  "localhost",
+					IPAddress: "127.0.0.1",
+				},
 			},
 			Client: m.Client{
 				ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
@@ -46,7 +48,7 @@ func Test_DAL_List_int(t *testing.T) {
 			},
 		}
 
-		Convey("save/get", func() {
+		Convey("should save the List", func() {
 			err := d.CreateOrUpdateList(msg)
 			So(err, ShouldBeNil)
 
@@ -60,7 +62,7 @@ func Test_DAL_List_int(t *testing.T) {
 			So(list.Users, ShouldResemble, msg.Data.Users)
 		})
 
-		Convey("update/get", func() {
+		Convey("should update the List", func() {
 			msg.Data.Title = "Target😡  "
 			err := d.CreateOrUpdateList(msg)
 			So(err, ShouldBeNil)
@@ -75,7 +77,7 @@ func Test_DAL_List_int(t *testing.T) {
 			So(list.Users, ShouldResemble, msg.Data.Users)
 		})
 
-		Convey("delete", func() {
+		Convey("should delete the List", func() {
 			err := d.DeleteList(msg)
 			So(err, ShouldBeNil)
 

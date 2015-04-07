@@ -12,10 +12,10 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			{
 				"method":  "create",
 				"resource": "list",
-				"server": {
+				"servers": [{
 					"hostname": "localhost",
 					"ipAddress": "127.0.0.1"
-				},
+				}],
 				"client": {
 					"id": "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 					"deviceType": "iPhone",
@@ -41,8 +41,8 @@ func Test_DeserializeCreateListMsg_unit(t *testing.T) {
 			So(msg, ShouldNotBeNil)
 			So(msg.Method, ShouldEqual, "create")
 			So(msg.Resource, ShouldEqual, "list")
-			So(msg.Server.Hostname, ShouldEqual, "localhost")
-			So(msg.Server.IPAddress, ShouldEqual, "127.0.0.1")
+			So(msg.Servers[0].Hostname, ShouldEqual, "localhost")
+			So(msg.Servers[0].IPAddress, ShouldEqual, "127.0.0.1")
 			So(msg.Client.ID, ShouldEqual, "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433")
 			So(msg.Client.DeviceType, ShouldEqual, "iPhone")
 			So(msg.Client.OsVersion, ShouldEqual, "7,2")
@@ -76,9 +76,11 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				Method:   "create",
 				Resource: "list",
 			},
-			Server: Server{
-				Hostname:  "create-list-msg-server-hostname",
-				IPAddress: "create-list-msg-server-ipaddress",
+			Servers: []Server{
+				Server{
+					Hostname:  "create-list-msg-server-hostname",
+					IPAddress: "create-list-msg-server-ipaddress",
+				},
 			},
 			Client: Client{
 				ID:         "create-list-msg-client-id",
@@ -94,6 +96,9 @@ func Test_CreateListMsg_unit(t *testing.T) {
 				IsHidden: false,
 			},
 		}
+
+		// b, _ := json.MarshalIndent(msg, "", "  ")
+		// fmt.Printf("%s", string(b))
 
 		Convey("Should return no error with base fields", func() {
 			err := msg.IsReadyToBeSaved()
