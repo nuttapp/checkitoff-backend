@@ -43,31 +43,26 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 func CreateOrUpdateListCQL(msg *m.ListMsg) (string, []interface{}, error) {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
-		return "", []interface{}{}, fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
+		return "", []interface{}{}, fmt.Errorf("DAL.CreateOrUpdateListCQL: %s\n", err.Error())
 	}
 
 	cql := `UPDATE list SET category=?, title=?, users=?, is_hidden=?, created_at=?, updated_at=?, msg=?
 			 WHERE list_id = ?`
 
 	params := []interface{}{msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
-		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt), msgBytes,
+		msg.Data.CreatedAt, msg.Data.UpdatedAt, msgBytes,
 		msg.Data.ID}
 
 	return cql, params, nil
 }
 
 func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
-	msgBytes, err := json.Marshal(msg)
+	cql, params, err := CreateOrUpdateListCQL(msg)
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
 	}
 
-	insertList := d.session.Query(
-		`UPDATE list SET category=?, title=?, users=?, is_hidden=?, created_at=?, updated_at=?, msg=?
-		 WHERE list_id = ?`,
-		msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
-		msg.Data.CreatedAt, msg.Data.UpdatedAt, msgBytes,
-		msg.Data.ID)
+	insertList := d.session.Query(cql, params...)
 	err = insertList.Exec()
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
