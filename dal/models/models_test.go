@@ -8,16 +8,16 @@ import (
 
 func Test_Models_unit(t *testing.T) {
 	Convey("ValidateMsg()", t, func() {
-		c := &Client{
+		c := Client{
 			ID:         "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
 			DeviceType: "iPhone",
 			OsVersion:  "7,2",
 		}
-		u := &User{
+		u := User{
 			ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 			Name: "test-user-name",
 		}
-		m := &Msg{
+		m := Msg{
 			ID:       "b920a5c0-d8f1-11e4-85fc-358ed15ecf72",
 			Method:   "create",
 			Resource: "list",

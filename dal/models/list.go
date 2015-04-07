@@ -54,7 +54,7 @@ func DeserializeCreateListMsg(jsonText []byte) (*ListMsg, error) {
 }
 
 func (e *ListMsg) IsReadyToBeSaved() error {
-	err := ValidateMsg(&e.Client, &e.User, &e.Msg, e.Servers)
+	err := ValidateMsg(e.Client, e.User, e.Msg, e.Servers)
 	if err != nil {
 		return err
 	}
