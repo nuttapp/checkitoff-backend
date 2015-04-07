@@ -1,6 +1,10 @@
 package dal
 
 import (
+	"encoding/json"
+	"fmt"
+	"time"
+
 	"github.com/gocql/gocql"
 	m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
@@ -11,8 +15,8 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 	var title string
 	var users []string
 	var isHidden bool
-	var createdAt gocql.UUID
-	var updatedAt gocql.UUID
+	var createdAt time.Time
+	var updatedAt time.Time
 
 	q := d.session.Query(
 		`SELECT list_id, category, title, users, is_hidden, created_at, updated_at
@@ -29,22 +33,44 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 		Category:  category,
 		Title:     title,
 		Users:     users,
-		CreatedAt: createdAt.Time(),
-		UpdatedAt: updatedAt.Time(),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 
 	return list, nil
 }
 
+func CreateOrUpdateListCQL(msg *m.ListMsg) (string, []interface{}, error) {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		return "", []interface{}{}, fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
+	}
+
+	cql := `UPDATE list SET category=?, title=?, users=?, is_hidden=?, created_at=?, updated_at=?, msg=?
+			 WHERE list_id = ?`
+
+	params := []interface{}{msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
+		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt), msgBytes,
+		msg.Data.ID}
+
+	return cql, params, nil
+}
+
 func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
+	}
+
 	insertList := d.session.Query(
-		`UPDATE list SET category = ?, title = ?, users = ?, is_hidden = ?, created_at = ?, updated_at = ?
+		`UPDATE list SET category=?, title=?, users=?, is_hidden=?, created_at=?, updated_at=?, msg=?
 		 WHERE list_id = ?`,
 		msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
-		gocql.UUIDFromTime(msg.Data.CreatedAt), gocql.UUIDFromTime(msg.Data.UpdatedAt), msg.Data.ID)
-	err := insertList.Exec()
+		msg.Data.CreatedAt, msg.Data.UpdatedAt, msgBytes,
+		msg.Data.ID)
+	err = insertList.Exec()
 	if err != nil {
-		return err
+		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
 	}
 	// `INSERT INTO list
 	// 	(list_id, category, title, users, is_hidden, created_at, updated_at)

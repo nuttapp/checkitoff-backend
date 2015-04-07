@@ -25,13 +25,16 @@ CREATE TABLE list (
     title varchar,
     users set<varchar>,
     is_hidden boolean,
-    created_at timeuuid,
-    updated_at timeuuid,
+    created_at timestamp,
+    updated_at timestamp,
+    msg varchar,
     PRIMARY KEY (list_id)
 );
 
-INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'task', 'Today', now(), now(), {'greg', 'jess'}, false );
-INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden) VALUES (62c36092-82a1-3a00-93d1-46196ee77205, 'shopping', 'Trader Joes', now(), now(), {'greg', 'jess'}, false);
+INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden, msg) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'task', 'Today', 1, 1, {'greg', 'jess'}, false, '{}');
+INSERT INTO list (list_id, category, title, created_at, updated_at, users, is_hidden, msg) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77205, 'shopping', 'Trader Joes', 1, 1, {'greg', 'jess'}, false, '{}');
 
 UPDATE list SET category = 'task', title = 'updated title' WHERE list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
 UPDATE list SET users = users + {'son'} WHERE list_id = 62c36092-82a1-3a00-93d1-46196ee77204;
@@ -43,7 +46,7 @@ CREATE INDEX list_users_idx ON demodb.list (users);
 
 select * from list where users contains 'greg';
 
-SELECT list_id, category, title, dateOf(created_at) as created_at, dateOf(updated_at) as updated_at, users, is_hidden FROM list;
+SELECT list_id, category, title, created_at, updated_at, users, is_hidden FROM list;
 
 --
 -- list
