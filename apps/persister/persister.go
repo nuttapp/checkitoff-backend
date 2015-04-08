@@ -9,7 +9,7 @@ import (
 	"github.com/bitly/go-nsq"
 	"github.com/gocql/gocql"
 	"github.com/nuttapp/checkitoff-backend/common"
-	m "github.com/nuttapp/checkitoff-backend/dal/models"
+	"github.com/nuttapp/checkitoff-backend/dal"
 )
 
 func main() {
@@ -60,7 +60,7 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 
 	switch cmd {
 	case "create-list":
-		cle, err := m.DeserializeCreateListMsg(msg.Body)
+		cle, err := dal.DeserializeCreateListMsg(msg.Body)
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func SaveInviteUserToListMsg() {
 	// }
 }
 
-func SaveCreateListMsg(cle *m.ListMsg) error {
+func SaveCreateListMsg(cle *dal.ListMsg) error {
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "demodb"
 	cluster.Consistency = gocql.Quorum

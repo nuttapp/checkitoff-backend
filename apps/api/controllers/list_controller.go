@@ -8,7 +8,7 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 	"github.com/nuttapp/checkitoff-backend/common/util"
-	m "github.com/nuttapp/checkitoff-backend/dal/models"
+	m "github.com/nuttapp/checkitoff-backend/dal"
 )
 
 const (
