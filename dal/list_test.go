@@ -56,6 +56,8 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 			So(msg.Data.Title, ShouldEqual, "Trader Joes")
 			So(msg.Data.IsHidden, ShouldEqual, true)
 			So(msg.Data.Category, ShouldEqual, "shopping")
+			So(msg.Data.Users[0], ShouldEqual, "greg")
+			So(msg.Data.Users[1], ShouldEqual, "jess")
 		})
 		Convey("should return error with invalid json", func() {
 			msg, err := DeserializeListMsg([]byte("asdf"))
