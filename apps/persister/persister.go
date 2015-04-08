@@ -60,7 +60,7 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 
 	switch cmd {
 	case "create-list":
-		cle, err := dal.DeserializeCreateListMsg(msg.Body)
+		cle, err := dal.DeserializeListMsg(msg.Body)
 		if err != nil {
 			return err
 		}

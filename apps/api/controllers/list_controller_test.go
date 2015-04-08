@@ -132,7 +132,7 @@ func Test_ListController_Unit(t *testing.T) {
 	})
 
 	Convey("Should deserialize json into CreateListMsg", t, func() {
-		event, err := dal.DeserializeCreateListMsg(createListMsgJSON)
+		event, err := dal.DeserializeListMsg(createListMsgJSON)
 		// fmt.Println(util.ToJSON(event))
 
 		So(event, ShouldNotBeNil)

@@ -45,7 +45,7 @@ func NewCreateListMsg() ListMsg {
 }
 
 // DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
-func DeserializeCreateListMsg(jsonText []byte) (*ListMsg, error) {
+func DeserializeListMsg(jsonText []byte) (*ListMsg, error) {
 	var event ListMsg
 	err := json.Unmarshal(jsonText, &event)
 	if err != nil {
