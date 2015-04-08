@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	// m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
 type List struct {

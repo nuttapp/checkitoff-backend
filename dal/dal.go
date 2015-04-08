@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/gocql/gocql"
-	// m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
 const (
