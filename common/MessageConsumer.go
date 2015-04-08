@@ -25,11 +25,11 @@ func NewMessageConsumer(cfg *ConsumerConfig, nsqCfg *nsq.Config, handler nsq.Han
 	consumer := MessageConsumer{
 		StopChan: make(chan error),
 		Handler:  handler,
+		Logger:   log.New(os.Stdout, "", log.LstdFlags),
 
 		requestStopChan: make(chan int),
 		nsqCfg:          nsqCfg,
 		cfg:             cfg,
-		logger:          log.New(os.Stdout, "", log.LstdFlags),
 	}
 	return &consumer
 }
@@ -40,11 +40,11 @@ func NewMessageConsumer(cfg *ConsumerConfig, nsqCfg *nsq.Config, handler nsq.Han
 type MessageConsumer struct {
 	StopChan chan error  // listen on StopChan to block after calling Stop()
 	Handler  nsq.Handler // the struct that will recieve the messages
+	Logger   *log.Logger
 
 	requestStopChan chan int
 	nsqCfg          *nsq.Config
 	cfg             *ConsumerConfig
-	logger          *log.Logger
 }
 
 func (mc *MessageConsumer) Start() {
@@ -58,7 +58,7 @@ func (mc *MessageConsumer) Stop() {
 }
 
 func (mc *MessageConsumer) log(text interface{}) {
-	mc.logger.Printf("[38;5;139mMessageConsumer[0m %s", text)
+	mc.Logger.Printf("[38;5;139mMessageConsumer[0m %s", text)
 }
 
 func (mc *MessageConsumer) ListenForMessages() {
