@@ -68,14 +68,14 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 }
 
 func Test_CreateListMsg_unit(t *testing.T) {
-
 	Convey("NewCreateListMsg()", t, func() {
 		msg := NewCreateListMsg()
 		So(msg, ShouldNotBeNil)
 	})
+}
 
-	// CreateListMsg.IsReadyToBeSaved()
-	Convey("IsReadyToBeSaved()", t, func() {
+func Test_ListMsg_ValidateMsg_unit(t *testing.T) {
+	Convey("ValidateMsg()", t, func() {
 		msg := &ListMsg{
 			Msg: Msg{
 				ID:       "create-list-msg-id",
@@ -145,7 +145,7 @@ func Test_CreateListMsg_unit(t *testing.T) {
 	})
 }
 
-func Test_DAL_List_int(t *testing.T) {
+func Test_List_CRUD_int(t *testing.T) {
 	cfg := DALCfg{
 		Hosts:       []string{"127.0.0.1"},
 		Keyspace:    "demodb",
@@ -186,20 +186,30 @@ func Test_DAL_List_int(t *testing.T) {
 			},
 		}
 
-		Convey("should save the List", func() {
-			err := d.CreateOrUpdateList(msg)
-			So(err, ShouldBeNil)
+		Convey("CreateOrUpdateList()", func() {
+			Convey("should save the list", func() {
+				err := d.CreateOrUpdateList(msg)
+				So(err, ShouldBeNil)
 
-			list, err := d.GetList(msg)
-			So(err, ShouldBeNil)
-			So(list, ShouldNotBeNil)
-			So(list.ID, ShouldEqual, msg.Data.ID)
-			So(list.Title, ShouldEqual, msg.Data.Title)
-			So(list.Category, ShouldEqual, msg.Data.Category)
-			So(list.IsHidden, ShouldEqual, false)
-			So(list.Users, ShouldResemble, msg.Data.Users)
-			So(list.CreatedAt, ShouldHappenOnOrBefore, msg.Data.CreatedAt)
-			So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
+				list, err := d.GetList(msg)
+				So(err, ShouldBeNil)
+				So(list, ShouldNotBeNil)
+				So(list.ID, ShouldEqual, msg.Data.ID)
+				So(list.Title, ShouldEqual, msg.Data.Title)
+				So(list.Category, ShouldEqual, msg.Data.Category)
+				So(list.IsHidden, ShouldEqual, false)
+				So(list.Users, ShouldResemble, msg.Data.Users)
+				So(list.CreatedAt, ShouldHappenOnOrBefore, msg.Data.CreatedAt)
+				So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
+			})
+			Convey("should return error when", func() {
+				Convey("list ID is blank", func() {
+					msg.Data.ID = ""
+					err := d.CreateOrUpdateList(msg)
+					So(err, ShouldNotBeNil)
+					So(err.Error(), ShouldContainSubstring, MissingListIDError)
+				})
+			})
 		})
 
 		Convey("should update the List", func() {

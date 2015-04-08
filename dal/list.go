@@ -128,6 +128,11 @@ func CreateOrUpdateListCQL(msg *ListMsg) (string, []interface{}, error) {
 }
 
 func (d *DAL) CreateOrUpdateList(msg *ListMsg) error {
+	err := msg.ValidateMsg()
+	if err != nil {
+		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
+	}
+
 	cql, params, err := CreateOrUpdateListCQL(msg)
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
