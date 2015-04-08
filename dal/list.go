@@ -2,14 +2,80 @@ package dal
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/gocql/gocql"
-	m "github.com/nuttapp/checkitoff-backend/dal/models"
+	// m "github.com/nuttapp/checkitoff-backend/dal/models"
 )
 
-func GetListCQL(msg *m.ListMsg) (string, []interface{}) {
+type List struct {
+	ID        string    `json:"id"`
+	Category  string    `json:"category"`
+	Title     string    `json:"title"`
+	Users     []string  `json:"users"`
+	IsHidden  bool      `json:"isHidden"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type ListMsg struct {
+	Msg
+	Servers []Server `json:"servers"`
+	Client  Client   `json:"client"`
+	User    User     `json:"user"`
+	Data    List     `json:"data"`
+	Err     error    `json:"error"`
+}
+
+func NewCreateListMsg() ListMsg {
+	createdAt := time.Now().UTC()
+	return ListMsg{
+		Msg: Msg{
+			Method:   MsgMethodCreate,
+			Resource: MsgResourceList,
+			ID:       gocql.TimeUUID().String(),
+		},
+		Data: List{
+			CreatedAt: createdAt,
+			UpdatedAt: createdAt,
+		},
+	}
+}
+
+// DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
+func DeserializeCreateListMsg(jsonText []byte) (*ListMsg, error) {
+	var event ListMsg
+	err := json.Unmarshal(jsonText, &event)
+	if err != nil {
+		return nil, err
+	}
+	return &event, nil
+}
+
+func (e *ListMsg) IsReadyToBeSaved() error {
+	err := ValidateMsg(e.Client, e.User, e.Msg, e.Servers)
+	if err != nil {
+		return err
+	}
+	if len(e.Data.ID) == 0 {
+		return errors.New(MissingListIDError)
+	}
+	if len(e.Data.Title) == 0 {
+		return errors.New(MissingListTitleError)
+	}
+	isValidMethod := e.Method == MsgMethodCreate || e.Method == MsgMethodUpdate || e.Method == MsgMethodDelete
+	if !isValidMethod {
+		return errors.New(InvalidMsgMethodError)
+	}
+	if e.Resource != MsgResourceList {
+		return errors.New(InvalidMsgResourceError)
+	}
+	return nil
+}
+
+func GetListCQL(msg *ListMsg) (string, []interface{}) {
 	cql := `SELECT list_id, category, title, users, is_hidden, created_at, updated_at
 			FROM list 
 			WHERE list_id = ? LIMIT 1`
@@ -17,7 +83,7 @@ func GetListCQL(msg *m.ListMsg) (string, []interface{}) {
 	return cql, params
 }
 
-func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
+func (d *DAL) GetList(msg *ListMsg) (*List, error) {
 	var id gocql.UUID
 	var category string
 	var title string
@@ -34,7 +100,7 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 		return nil, err
 	}
 
-	list := &m.List{
+	list := &List{
 		ID:        id.String(),
 		Category:  category,
 		Title:     title,
@@ -46,7 +112,7 @@ func (d *DAL) GetList(msg *m.ListMsg) (*m.List, error) {
 	return list, nil
 }
 
-func CreateOrUpdateListCQL(msg *m.ListMsg) (string, []interface{}, error) {
+func CreateOrUpdateListCQL(msg *ListMsg) (string, []interface{}, error) {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		return "", []interface{}{}, fmt.Errorf("DAL.CreateOrUpdateListCQL: %s\n", err.Error())
@@ -62,7 +128,7 @@ func CreateOrUpdateListCQL(msg *m.ListMsg) (string, []interface{}, error) {
 	return cql, params, nil
 }
 
-func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
+func (d *DAL) CreateOrUpdateList(msg *ListMsg) error {
 	cql, params, err := CreateOrUpdateListCQL(msg)
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
@@ -77,7 +143,7 @@ func (d *DAL) CreateOrUpdateList(msg *m.ListMsg) error {
 	return nil
 }
 
-func (d *DAL) DeleteList(msg *m.ListMsg) error {
+func (d *DAL) DeleteList(msg *ListMsg) error {
 	insertList := d.session.Query(`DELETE FROM list WHERE list_id = ?`, msg.Data.ID)
 	err := insertList.Exec()
 	if err != nil {
