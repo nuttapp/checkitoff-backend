@@ -23,20 +23,20 @@ const (
 )
 
 func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
-	var event m.ListMsg
-	err := json.Unmarshal(jsonText, &event)
+	var msg m.ListMsg
+	err := json.Unmarshal(jsonText, &msg)
 	if err != nil {
 		return util.NewError(CreateListMsgJSONUnmarshalError, err)
 	}
 
-	event.ID = gocql.TimeUUID().String()
+	msg.ID = gocql.TimeUUID().String()
 
 	listID, err := gocql.RandomUUID()
 	if err != nil {
 		return errors.New("Failed to create UUID")
 	}
 
-	event.Data.ID = listID.String()
+	msg.Data.ID = listID.String()
 
 	if apiCfg == nil {
 		return errors.New("apiCfg cannot be nil")
@@ -46,8 +46,8 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		Hostname:  apiCfg.Hostname,
 		IPAddress: apiCfg.IPAddress,
 	}
-	event.Servers = append(event.Servers, server)
-	err = event.ValidateMsg()
+	msg.Servers = append(msg.Servers, server)
+	err = msg.ValidateMsg()
 	if err != nil {
 		return util.NewError(CreateListMsgValidationError, err)
 	}
@@ -57,7 +57,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		return util.NewError(ProducerConnectionError, err)
 	}
 
-	b, err := json.Marshal(event)
+	b, err := json.Marshal(msg)
 	if err != nil {
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
