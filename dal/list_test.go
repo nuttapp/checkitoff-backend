@@ -105,37 +105,37 @@ func Test_CreateListMsg_unit(t *testing.T) {
 		// fmt.Printf("%s", string(b))
 
 		Convey("Should return no error with base fields", func() {
-			err := msg.IsReadyToBeSaved()
+			err := msg.ValidateMsg()
 			So(err, ShouldBeNil)
 		})
 
 		Convey("should return errror when", func() {
 			Convey("list id is blank", func() {
 				msg.Data.ID = ""
-				err := msg.IsReadyToBeSaved()
+				err := msg.ValidateMsg()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListIDError)
 			})
 			Convey("list title is blank", func() {
 				msg.Data.Title = ""
-				err := msg.IsReadyToBeSaved()
+				err := msg.ValidateMsg()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListTitleError)
 			})
 			Convey("one of the base fields is blank", func() {
 				msg.ID = ""
-				err := msg.IsReadyToBeSaved()
+				err := msg.ValidateMsg()
 				So(err, ShouldNotBeNil)
 			})
 			Convey("msg method is not valid", func() {
 				msg.Method = "invalid method type"
-				err := msg.IsReadyToBeSaved()
+				err := msg.ValidateMsg()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, InvalidMsgMethodError)
 			})
 			Convey("msg resource is not \"list\"", func() {
 				msg.Resource = "invalid resource"
-				err := msg.IsReadyToBeSaved()
+				err := msg.ValidateMsg()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, InvalidMsgResourceError)
 			})

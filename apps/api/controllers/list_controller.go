@@ -47,7 +47,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		IPAddress: apiCfg.IPAddress,
 	}
 	event.Servers = append(event.Servers, server)
-	err = event.IsReadyToBeSaved()
+	err = event.ValidateMsg()
 	if err != nil {
 		return util.NewError(CreateListMsgValidationError, err)
 	}
