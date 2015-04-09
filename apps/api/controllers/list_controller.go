@@ -62,7 +62,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
-	err = producer.Publish("api_events", b)
+	err = producer.Publish(apiCfg.NSQTopic, b)
 	if err != nil {
 		return util.NewError(ProducerPublishError, err)
 	}
