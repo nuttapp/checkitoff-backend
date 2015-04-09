@@ -28,7 +28,7 @@ type ListMsg struct {
 	Err     error    `json:"error"`
 }
 
-func NewCreateListMsg() ListMsg {
+func NewListMsg() ListMsg {
 	createdAt := time.Now().UTC()
 	return ListMsg{
 		Msg: Msg{

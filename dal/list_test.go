@@ -69,7 +69,7 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 
 func Test_CreateListMsg_unit(t *testing.T) {
 	Convey("NewCreateListMsg()", t, func() {
-		msg := NewCreateListMsg()
+		msg := NewListMsg()
 		So(msg, ShouldNotBeNil)
 	})
 }
