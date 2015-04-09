@@ -7,7 +7,6 @@ import (
 
 	"github.com/bitly/go-nsq"
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
-	"github.com/nuttapp/checkitoff-backend/common"
 	"github.com/nuttapp/checkitoff-backend/dal"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -31,12 +30,11 @@ var createJSON = []byte(`
 	}`)
 
 func Test_ListController_int(t *testing.T) {
-	conCfg := &common.ConsumerConfig{
-		Topic:           "Test_ListController",
-		Channel:         "test",
-		LookupdHTTPaddr: "127.0.0.1:4161",
-		Concurrency:     1,
-	}
+	const (
+		NSQTopic           = "Test_ListController"
+		NSQChannel         = "test"
+		NSQLookupdHTTPAddr = "127.0.0.1:4161"
+	)
 
 	apiCfg := &config.Config{
 		Hostname:           "localhost",
@@ -47,26 +45,37 @@ func Test_ListController_int(t *testing.T) {
 
 	nsqCfg := nsq.NewConfig()
 
-	Convey("Should enqueue CreateListMsg on NSQ", t, func() {
+	Convey("Should enqueue/dequeue ListMsg on NSQ", t, func() {
 		err := ListControllerCreate(createJSON, nsqCfg, apiCfg)
 		So(err, ShouldBeNil)
 
 		th := &testHandler{
-			testChan: make(chan *nsq.Message, 5),
+			testChan: make(chan *nsq.Message),
 		}
-		con := common.NewMessageConsumer(conCfg, nsqCfg, th)
 
-		var b bytes.Buffer
-		con.Logger = log.New(&b, "", 0)
-		con.Start()
+		consumer, err := nsq.NewConsumer(NSQTopic, NSQChannel, nsqCfg)
+		So(err, ShouldBeNil)
+
+		var logBuf bytes.Buffer
+		logger := log.New(&logBuf, "", log.LstdFlags)
+		consumer.SetLogger(logger, nsq.LogLevelDebug)
+
+		consumer.AddHandler(th)
+		err = consumer.ConnectToNSQLookupd(NSQLookupdHTTPAddr)
+		So(err, ShouldBeNil)
 
 		dequeuedMsg := <-th.testChan
 		msg, err := dal.DeserializeListMsg(dequeuedMsg.Body)
 		So(err, ShouldBeNil)
 		So(msg, ShouldNotBeNil)
 		So(msg.Data.Title, ShouldEqual, "Trader Joes")
-	})
+		So(msg.Data.ID, ShouldNotBeEmpty)
+		So(msg.ID, ShouldNotBeEmpty)
 
+		consumer.Stop()
+		<-consumer.StopChan
+		// fmt.Println(logBuf.String())
+	})
 }
 
 type testHandler struct {
