@@ -28,26 +28,31 @@ type ListMsg struct {
 	Err     error    `json:"error"`
 }
 
+// NewListMsg constructs ListMsg structs
+// It takes the json sent by a client, and creates a valid LisMsg struct,
+// which can be sent to NSQ and consumed by our apps (persistor, logger etc..)
+// You should not try to construct a ListMsg manually
 func NewListMsg(msgMethod string, msgJSON []byte) (*ListMsg, error) {
-	msgID, err := gocql.RandomUUID()
+	msg, err := DeserializeListMsg(msgJSON)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := DeserializeListMsg(msgJSON)
+	msgID, err := gocql.RandomUUID()
 	if err != nil {
 		return nil, err
 	}
 
 	switch msgMethod {
 	case MsgMethodCreate:
+		msg.ID = msgID.String()
+
 		listID, err := gocql.RandomUUID()
 		if err != nil {
 			return nil, err
 		}
-
-		msg.ID = msgID.String()
 		msg.Data.ID = listID.String()
+
 		msg.Data.CreatedAt = time.Now().UTC()
 		msg.Data.UpdatedAt = msg.Data.CreatedAt
 
