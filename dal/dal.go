@@ -20,8 +20,10 @@ const (
 	// User
 	MissingUserIDError = "Msg user ID cannot be empty"
 	// Server
+	MissingServersField         = "Msg Servers array caanot be empty"
 	MissingServerHostnameError  = "Msg server Hostname cannot be empty"
 	MissingServerIPAddressError = "Msg server IPAddress cannot be empty"
+	MissingServerRoleError      = "Msg server Role cannot be empty"
 	// List
 	MissingListIDError    = "List ID cannot be emtpy"
 	MissingListTitleError = "List Title cannot be empty"
@@ -64,6 +66,7 @@ type Server struct {
 	TTL       int    `json:"ttl"`
 	Hostname  string `json:"hostname"`
 	IPAddress string `json:"ipAddress"`
+	Role      string `json:"role"`
 }
 
 type Client struct {
@@ -103,12 +106,18 @@ func ValidateMsg(c Client, u User, e Msg, s []Server) error {
 	if len(e.ID) == 0 {
 		return errors.New(MissingMsgIDError)
 	}
+	if len(s) == 0 {
+		return errors.New(MissingServersField)
+	}
 	for _, server := range s {
 		if len(server.Hostname) == 0 {
 			return errors.New(MissingServerHostnameError)
 		}
 		if len(server.IPAddress) == 0 {
 			return errors.New(MissingServerIPAddressError)
+		}
+		if len(server.Role) == 0 {
+			return errors.New(MissingServerRoleError)
 		}
 	}
 	return nil

@@ -39,6 +39,7 @@ func Test_ListController_int(t *testing.T) {
 	apiCfg := &config.Config{
 		Hostname:           "localhost",
 		IPAddress:          "127.0.0.1",
+		Role:               "api",
 		NSQProducerTCPAddr: "127.0.0.1:4150",
 		NSQTopic:           "Test_ListController",
 	}

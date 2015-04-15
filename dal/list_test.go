@@ -17,7 +17,8 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 				"servers": [{
 					"ttl": 1,
 					"hostname": "localhost",
-					"ipAddress": "127.0.0.1"
+					"ipAddress": "127.0.0.1",
+					"role": "api"
 				}],
 				"client": {
 					"id": "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433",
@@ -47,6 +48,7 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 			So(msg.Servers[0].Hostname, ShouldEqual, "localhost")
 			So(msg.Servers[0].IPAddress, ShouldEqual, "127.0.0.1")
 			So(msg.Servers[0].TTL, ShouldEqual, 1)
+			So(msg.Servers[0].Role, ShouldEqual, "api")
 			So(msg.Client.ID, ShouldEqual, "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433")
 			So(msg.Client.DeviceType, ShouldEqual, "iPhone")
 			So(msg.Client.OsVersion, ShouldEqual, "7,2")
@@ -121,8 +123,10 @@ func Test_ListMsg_ValidateMsg_unit(t *testing.T) {
 			},
 			Servers: []Server{
 				Server{
+					TTL:       1,
 					Hostname:  "create-list-msg-server-hostname",
 					IPAddress: "create-list-msg-server-ipaddress",
+					Role:      "api",
 				},
 			},
 			Client: Client{
@@ -196,6 +200,7 @@ func Test_List_CRUD_int(t *testing.T) {
 				Server{
 					Hostname:  "localhost",
 					IPAddress: "127.0.0.1",
+					Role:      "api",
 				},
 			},
 			Client: Client{

@@ -45,6 +45,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 	server := m.Server{
 		Hostname:  apiCfg.Hostname,
 		IPAddress: apiCfg.IPAddress,
+		Role:      apiCfg.Role,
 	}
 	msg.Servers = append(msg.Servers, server)
 	err = msg.ValidateMsg()
