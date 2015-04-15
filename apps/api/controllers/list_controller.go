@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/bitly/go-nsq"
-	"github.com/gocql/gocql"
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 	"github.com/nuttapp/checkitoff-backend/common/util"
 	m "github.com/nuttapp/checkitoff-backend/dal"
@@ -23,23 +22,13 @@ const (
 )
 
 func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
-	var msg m.ListMsg
-	err := json.Unmarshal(jsonText, &msg)
-	if err != nil {
-		return util.NewError(CreateListMsgJSONUnmarshalError, err)
-	}
-
-	msg.ID = gocql.TimeUUID().String()
-
-	listID, err := gocql.RandomUUID()
-	if err != nil {
-		return errors.New("Failed to create UUID")
-	}
-
-	msg.Data.ID = listID.String()
-
 	if apiCfg == nil {
 		return errors.New("apiCfg cannot be nil")
+	}
+
+	msg, err := m.NewListMsg(m.MsgMethodCreate, jsonText)
+	if err != nil {
+		return err
 	}
 
 	server := m.Server{
@@ -48,6 +37,7 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		Role:      apiCfg.Role,
 	}
 	msg.Servers = append(msg.Servers, server)
+
 	err = msg.ValidateMsg()
 	if err != nil {
 		return util.NewError(CreateListMsgValidationError, err)

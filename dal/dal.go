@@ -63,10 +63,10 @@ const (
 )
 
 type Server struct {
-	TTL       int    `json:"ttl"`
-	Hostname  string `json:"hostname"`
-	IPAddress string `json:"ipAddress"`
-	Role      string `json:"role"`
+	TTL       int    `json:"ttl"`       // incrementing # of the hop
+	Hostname  string `json:"hostname"`  //
+	IPAddress string `json:"ipAddress"` // ipv4 addr
+	Role      string `json:"role"`      // api/persistor/logger/db
 }
 
 type Client struct {
