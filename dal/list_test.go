@@ -67,10 +67,47 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 	})
 }
 
-func Test_CreateListMsg_unit(t *testing.T) {
-	Convey("NewCreateListMsg()", t, func() {
-		msg := NewListMsg()
-		So(msg, ShouldNotBeNil)
+func Test_NewListMsg_unit(t *testing.T) {
+	Convey("NewListMsg()", t, func() {
+		Convey("should generate msg.ID, Data.ID, and users array", func() {
+			msg, err := NewListMsg(MsgMethodCreate, []byte(`{
+				"method": "create",
+				"resource": "list",
+				"user": {
+					"id": "12345"
+				},
+				"data": {
+					"title": "title"
+				}
+			}`))
+			So(err, ShouldBeNil)
+			So(msg, ShouldNotBeNil)
+			So(msg.ID, ShouldNotBeEmpty)
+			So(msg.Data.ID, ShouldNotBeEmpty)
+			So(msg.Data.Users[0], ShouldEqual, "12345")
+			So(msg.Data.Title, ShouldEqual, "title")
+			So(msg.Method, ShouldEqual, MsgMethodCreate)
+			So(msg.Resource, ShouldEqual, MsgResourceList)
+			So(msg.Data.UpdatedAt, ShouldResemble, msg.Data.CreatedAt)
+		})
+		Convey("should update UpdatedAt & use data.id", func() {
+			timestamp := time.Now().UTC()
+			msg, err := NewListMsg(MsgMethodUpdate, []byte(`{
+				"method": "update",
+				"resource": "list",
+				"data": {
+					"id": "12345",
+					"title": "title"
+				}
+			}`))
+			So(err, ShouldBeNil)
+			So(msg, ShouldNotBeNil)
+			So(msg.Method, ShouldEqual, MsgMethodUpdate)
+			So(msg.Resource, ShouldEqual, MsgResourceList)
+			So(msg.Data.ID, ShouldEqual, "12345")
+			So(msg.Method, ShouldEqual, MsgMethodUpdate)
+			So(msg.Data.UpdatedAt, ShouldHappenAfter, timestamp)
+		})
 	})
 }
 

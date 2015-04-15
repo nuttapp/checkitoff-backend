@@ -72,6 +72,7 @@ func Test_ListController_int(t *testing.T) {
 		So(msg.Data.ID, ShouldNotBeEmpty)
 		So(msg.ID, ShouldNotBeEmpty)
 
+		// waiting for consumer to stop take about 10ms
 		consumer.Stop()
 		<-consumer.StopChan
 		// fmt.Println(logBuf.String())

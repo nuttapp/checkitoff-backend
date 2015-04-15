@@ -28,19 +28,37 @@ type ListMsg struct {
 	Err     error    `json:"error"`
 }
 
-func NewListMsg() ListMsg {
-	createdAt := time.Now().UTC()
-	return ListMsg{
-		Msg: Msg{
-			Method:   MsgMethodCreate,
-			Resource: MsgResourceList,
-			ID:       gocql.TimeUUID().String(),
-		},
-		Data: List{
-			CreatedAt: createdAt,
-			UpdatedAt: createdAt,
-		},
+func NewListMsg(msgMethod string, msgJSON []byte) (*ListMsg, error) {
+	msgID, err := gocql.RandomUUID()
+	if err != nil {
+		return nil, err
 	}
+
+	msg, err := DeserializeListMsg(msgJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	switch msgMethod {
+	case MsgMethodCreate:
+		listID, err := gocql.RandomUUID()
+		if err != nil {
+			return nil, err
+		}
+
+		msg.ID = msgID.String()
+		msg.Data.ID = listID.String()
+		msg.Data.CreatedAt = time.Now().UTC()
+		msg.Data.UpdatedAt = msg.Data.CreatedAt
+
+		// add the user creating the list to users of the list
+		msg.Data.Users = append(msg.Data.Users, msg.User.ID)
+	case MsgMethodUpdate:
+		msg.ID = msgID.String()
+		msg.Data.UpdatedAt = time.Now().UTC()
+	}
+
+	return msg, nil
 }
 
 // DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
