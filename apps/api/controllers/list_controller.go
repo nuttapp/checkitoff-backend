@@ -7,7 +7,7 @@ import (
 	"github.com/bitly/go-nsq"
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 	"github.com/nuttapp/checkitoff-backend/common/util"
-	m "github.com/nuttapp/checkitoff-backend/dal"
+	"github.com/nuttapp/checkitoff-backend/dal"
 )
 
 const (
@@ -16,9 +16,8 @@ const (
 )
 
 const (
-	CreateListMsgJSONUnmarshalError = "Failed to unmarshal json into CreateListMsg"
-	CreateListMsgJSONMarshalError   = "Failed to marshal CreateListMsg into json"
-	CreateListMsgValidationError    = "Validation failed for CreateListMsg"
+	CreateListMsgJSONMarshalError = "Failed to marshal CreateListMsg into json"
+	CreateListMsgValidationError  = "Validation failed for CreateListMsg"
 )
 
 func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
@@ -26,12 +25,12 @@ func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Co
 		return errors.New("apiCfg cannot be nil")
 	}
 
-	msg, err := m.NewListMsg(m.MsgMethodCreate, jsonText)
+	msg, err := dal.NewListMsg(dal.MsgMethodCreate, jsonText)
 	if err != nil {
 		return err
 	}
 
-	server := m.Server{
+	server := dal.Server{
 		Hostname:  apiCfg.Hostname,
 		IPAddress: apiCfg.IPAddress,
 		Role:      apiCfg.Role,
