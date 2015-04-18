@@ -31,18 +31,13 @@ var createJSON = []byte(`
 
 func Test_ListController_int(t *testing.T) {
 	const (
-		NSQTopic           = "Test_ListController"
-		NSQChannel         = "test"
-		NSQLookupdHTTPAddr = "127.0.0.1:4161"
+		NSQTopic   = "Test_ListController"
+		NSQChannel = "test"
+		// NSQLookupdHTTPAddr = "127.0.0.1:4161"
 	)
 
-	apiCfg := &config.Config{
-		Hostname:           "localhost",
-		IPAddress:          "127.0.0.1",
-		Role:               "api",
-		NSQProducerTCPAddr: "127.0.0.1:4150",
-		NSQTopic:           "Test_ListController",
-	}
+	apiCfg := config.NewConfig()
+	apiCfg.NSQTopic = "Test_ListController"
 
 	nsqCfg := nsq.NewConfig()
 
@@ -62,7 +57,7 @@ func Test_ListController_int(t *testing.T) {
 		consumer.SetLogger(logger, nsq.LogLevelDebug)
 
 		consumer.AddHandler(th)
-		err = consumer.ConnectToNSQLookupd(NSQLookupdHTTPAddr)
+		err = consumer.ConnectToNSQLookupd(apiCfg.NSQLookupdHTTPAddr)
 		So(err, ShouldBeNil)
 
 		dequeuedMsg := <-th.testChan
