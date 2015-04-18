@@ -37,7 +37,7 @@ func Test_ListController_int(t *testing.T) {
 	)
 
 	apiCfg := config.NewConfig()
-	apiCfg.NSQTopic = "Test_ListController"
+	apiCfg.NSQPubTopic = "Test_ListController"
 
 	nsqCfg := nsq.NewConfig()
 

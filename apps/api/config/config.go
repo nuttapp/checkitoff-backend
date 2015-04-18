@@ -6,7 +6,7 @@ type Config struct {
 	Role               string // api
 	NSQProducerTCPAddr string
 	NSQLookupdHTTPAddr string
-	NSQTopic           string
+	NSQPubTopic        string
 }
 
 func NewConfig() *Config {
@@ -16,7 +16,7 @@ func NewConfig() *Config {
 		Role:               "api",
 		NSQProducerTCPAddr: "127.0.0.1:4150",
 		NSQLookupdHTTPAddr: "127.0.0.1:4161",
-		NSQTopic:           "api_messages",
+		NSQPubTopic:        "api_messages",
 	}
 	return config
 }
