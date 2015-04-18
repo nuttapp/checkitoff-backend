@@ -32,7 +32,7 @@ var createJSON = []byte(`
 func Test_ListController_int(t *testing.T) {
 	const NSQChannel = "test"
 
-	apiContext := api.InitContext()
+	apiContext := api.NewContext()
 	apiContext.APICfg.NSQPubTopic = "Test_ListController"
 	apiCfg := apiContext.APICfg
 	nsqCfg := apiContext.NSQCfg

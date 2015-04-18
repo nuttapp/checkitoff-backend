@@ -7,7 +7,7 @@ import (
 )
 
 func Test_API_int(t *testing.T) {
-	context := InitContext()
+	context := NewContext()
 	Convey("API", t, func() {
 		Convey("should Ping NSQ", func() {
 			err := context.Producer.Ping()

@@ -11,12 +11,10 @@ type APIContext struct {
 	Producer *nsq.Producer
 }
 
-var Context *APIContext
-
 // InitContext Initializes a global variable called Context and
 // returns a pointer to it.  Context is meant to span across
 // API requests, it can be safely accessed accross goroutines
-func InitContext() *APIContext {
+func NewContext() *APIContext {
 	apiCfg := config.NewConfig()
 
 	nsqCfg := nsq.NewConfig()
@@ -33,12 +31,11 @@ func InitContext() *APIContext {
 		NSQCfg:   nsqCfg,
 	}
 
-	Context = context
 	return context
 }
 
 func main() {
-	Context = InitContext()
+	// Context = NewContext()
 
 	// signalChan := make(chan os.Signal, 1)
 	// signal.Notify(signalChan, os.Interrupt)
