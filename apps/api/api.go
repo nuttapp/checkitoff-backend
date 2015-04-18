@@ -1,57 +1,86 @@
-package main
+package api
 
 import (
-	"fmt"
-	"os"
-	"os/signal"
-
 	"github.com/bitly/go-nsq"
-	"github.com/nuttapp/checkitoff-backend/common"
+	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 )
 
-func main() {
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt)
+type APIContext struct {
+	NSQCfg   *nsq.Config
+	APICfg   *config.Config
+	Producer *nsq.Producer
+}
+
+var Context *APIContext
+
+// InitContext Initializes a global variable called Context and
+// returns a pointer to it.  Context is meant to span across
+// API requests, it can be safely accessed accross goroutines
+func InitContext() *APIContext {
+	apiCfg := config.NewConfig()
 
 	nsqCfg := nsq.NewConfig()
-	nsqCfg.MaxInFlight = 5
+	nsqCfg.MaxInFlight = 10
 
-	conCfg := &common.ConsumerConfig{
-		Topic:           "api01",
-		Channel:         "client_events",
-		LookupdHTTPaddr: "127.0.0.1:4161",
-		Concurrency:     10,
+	producer, err := nsq.NewProducer(apiCfg.NSQProducerTCPAddr, nsqCfg)
+	if err != nil {
+		panic(err)
 	}
 
-	handler := &APIMessageHandler{}
-	mc := common.NewMessageConsumer(conCfg, nsqCfg, handler)
-	mc.Start()
-
-	for {
-		select {
-		// On quit signal stop the api consumer
-		case <-signalChan:
-			fmt.Println("")
-			mc.Stop()
-		case err := <-mc.StopChan:
-			if err != nil {
-				fmt.Printf("MessageConsumer stopped with error: %s", err)
-			}
-			fmt.Println("END")
-			return
-		}
+	context := &APIContext{
+		Producer: producer,
+		APICfg:   apiCfg,
 	}
+
+	Context = context
+	return context
 }
 
-type APIMessageHandler struct{}
+func main() {
+	Context = InitContext()
 
-func (mh *APIMessageHandler) HandleMessage(m *nsq.Message) error {
-	// Check if message is related to a connected client
-	// send response to client
-	fmt.Println(string(m.Body))
-	return nil
+	// signalChan := make(chan os.Signal, 1)
+	// signal.Notify(signalChan, os.Interrupt)
+	//
+	// nsqCfg := nsq.NewConfig()
+	// nsqCfg.MaxInFlight = 5
+	//
+	// conCfg := &common.ConsumerConfig{
+	// 	Topic:           "api01",
+	// 	Channel:         "client_events",
+	// 	LookupdHTTPaddr: "127.0.0.1:4161",
+	// 	Concurrency:     10,
+	// }
+	//
+	// handler := &APIMessageHandler{}
+	// mc := common.NewMessageConsumer(conCfg, nsqCfg, handler)
+	// mc.Start()
+	//
+	// for {
+	// 	select {
+	// 	// On quit signal stop the api consumer
+	// 	case <-signalChan:
+	// 		fmt.Println("")
+	// 		mc.Stop()
+	// 	case err := <-mc.StopChan:
+	// 		if err != nil {
+	// 			fmt.Printf("MessageConsumer stopped with error: %s", err)
+	// 		}
+	// 		fmt.Println("END")
+	// 		return
+	// 	}
+	// }
 }
 
+// type APIMessageHandler struct{}
+//
+// func (mh *APIMessageHandler) HandleMessage(m *nsq.Message) error {
+// 	// Check if message is related to a connected client
+// 	// send response to client
+// 	fmt.Println(string(m.Body))
+// 	return nil
+// }
+//
 // func main() {
 // 	log.Println("[38;5;177mCheck-itoff api START...[0m")
 // 	router := httprouter.New()
