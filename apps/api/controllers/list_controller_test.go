@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/bitly/go-nsq"
-	"github.com/nuttapp/checkitoff-backend/apps/api/config"
+	"github.com/nuttapp/checkitoff-backend/apps/api"
 	"github.com/nuttapp/checkitoff-backend/dal"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -32,13 +32,13 @@ var createJSON = []byte(`
 func Test_ListController_int(t *testing.T) {
 	const NSQChannel = "test"
 
-	apiCfg := config.NewConfig()
-	apiCfg.NSQPubTopic = "Test_ListController"
-
-	nsqCfg := nsq.NewConfig()
+	apiContext := api.InitContext()
+	apiContext.APICfg.NSQPubTopic = "Test_ListController"
+	apiCfg := apiContext.APICfg
+	nsqCfg := apiContext.NSQCfg
 
 	Convey("Should enqueue ListMsg on NSQ", t, func() {
-		err := ListControllerCreate(createJSON, nsqCfg, apiCfg)
+		err := ListControllerCreate(createJSON, apiContext)
 		So(err, ShouldBeNil)
 
 		th := &testHandler{

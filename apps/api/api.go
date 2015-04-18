@@ -30,6 +30,7 @@ func InitContext() *APIContext {
 	context := &APIContext{
 		Producer: producer,
 		APICfg:   apiCfg,
+		NSQCfg:   nsqCfg,
 	}
 
 	Context = context

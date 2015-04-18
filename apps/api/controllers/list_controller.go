@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/bitly/go-nsq"
-	"github.com/nuttapp/checkitoff-backend/apps/api/config"
+	"github.com/nuttapp/checkitoff-backend/apps/api"
 	"github.com/nuttapp/checkitoff-backend/common/util"
 	"github.com/nuttapp/checkitoff-backend/dal"
 )
@@ -20,8 +20,11 @@ const (
 	CreateListMsgValidationError  = "Validation failed for CreateListMsg"
 )
 
-func ListControllerCreate(jsonText []byte, nsqCfg *nsq.Config, apiCfg *config.Config) error {
-	if apiCfg == nil {
+func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
+	apiCfg := c.APICfg
+	nsqCfg := c.NSQCfg
+
+	if c.APICfg == nil {
 		return errors.New("apiCfg cannot be nil")
 	}
 
