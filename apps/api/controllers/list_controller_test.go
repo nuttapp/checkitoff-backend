@@ -30,18 +30,14 @@ var createJSON = []byte(`
 	}`)
 
 func Test_ListController_int(t *testing.T) {
-	const (
-		NSQTopic   = "Test_ListController"
-		NSQChannel = "test"
-		// NSQLookupdHTTPAddr = "127.0.0.1:4161"
-	)
+	const NSQChannel = "test"
 
 	apiCfg := config.NewConfig()
 	apiCfg.NSQPubTopic = "Test_ListController"
 
 	nsqCfg := nsq.NewConfig()
 
-	Convey("Should enqueue/dequeue ListMsg on NSQ", t, func() {
+	Convey("Should enqueue ListMsg on NSQ", t, func() {
 		err := ListControllerCreate(createJSON, nsqCfg, apiCfg)
 		So(err, ShouldBeNil)
 
@@ -49,7 +45,7 @@ func Test_ListController_int(t *testing.T) {
 			testChan: make(chan *nsq.Message),
 		}
 
-		consumer, err := nsq.NewConsumer(NSQTopic, NSQChannel, nsqCfg)
+		consumer, err := nsq.NewConsumer(apiCfg.NSQPubTopic, NSQChannel, nsqCfg)
 		So(err, ShouldBeNil)
 
 		var logBuf bytes.Buffer
