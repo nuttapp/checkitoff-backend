@@ -21,9 +21,6 @@ const (
 )
 
 func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
-	apiCfg := c.APICfg
-	nsqCfg := c.NSQCfg
-
 	if c.APICfg == nil {
 		return errors.New("apiCfg cannot be nil")
 	}
@@ -34,9 +31,9 @@ func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
 	}
 
 	server := dal.Server{
-		Hostname:  apiCfg.Hostname,
-		IPAddress: apiCfg.IPAddress,
-		Role:      apiCfg.Role,
+		Hostname:  c.APICfg.Hostname,
+		IPAddress: c.APICfg.IPAddress,
+		Role:      c.APICfg.Role,
 	}
 	msg.Servers = append(msg.Servers, server)
 
@@ -45,7 +42,7 @@ func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
 		return util.NewError(CreateListMsgValidationError, err)
 	}
 
-	producer, err := nsq.NewProducer(apiCfg.NSQProducerTCPAddr, nsqCfg)
+	producer, err := nsq.NewProducer(c.APICfg.NSQProducerTCPAddr, c.NSQCfg)
 	if err != nil {
 		return util.NewError(ProducerConnectionError, err)
 	}
@@ -55,7 +52,7 @@ func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
-	err = producer.Publish(apiCfg.NSQPubTopic, b)
+	err = producer.Publish(c.APICfg.NSQPubTopic, b)
 	if err != nil {
 		return util.NewError(ProducerPublishError, err)
 	}
