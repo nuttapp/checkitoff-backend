@@ -5,29 +5,62 @@ import (
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
 )
 
+type APIServer struct {
+	Ctx *APIContext
+}
+
+func (s *APIServer) Start() {
+	// start listening for msessages from nsq
+	// start listening on endpoints
+}
+
+func (s *APIServer) Stop() {
+	// disconnect producer
+	// disconnect consumer
+}
+
+func PublishMsg(ctx *APIContext, id string, msg []byte) (chan *nsq.Message, error) {
+	// save the id into db
+	// send message to nsq
+	err := ctx.Producer.Publish(ctx.Cfg.NSQ.ProducerTCPAddr, msg)
+	return nil, err
+}
+
+func (s *APIServer) HandleMessage() {
+	// receive message from nsq
+	// lookup id and get channel
+	// if id exists send the received msg on channel
+	// if id not exist log error
+}
+
 type APIContext struct {
+	Messages map[string]chan *nsq.Message
 	NSQCfg   *nsq.Config
-	APICfg   *config.Config
+	Cfg      *config.Config
 	Producer *nsq.Producer
 }
 
-// InitContext Initializes a global variable called Context and
+// NewAPIServer(APIContext)
+// Server.start
+
+// InitContext Initializes an new API Context and
 // returns a pointer to it.  Context is meant to span across
 // API requests, it can be safely accessed accross goroutines
-func NewContext() *APIContext {
+func NewContext(environment string) *APIContext {
 	apiCfg := config.NewConfig()
 
 	nsqCfg := nsq.NewConfig()
 	nsqCfg.MaxInFlight = 10
 
-	producer, err := nsq.NewProducer(apiCfg.NSQProducerTCPAddr, nsqCfg)
+	producer, err := nsq.NewProducer(apiCfg.NSQ.ProducerTCPAddr, nsqCfg)
 	if err != nil {
 		panic(err)
 	}
 
 	context := &APIContext{
+		Messages: make(map[string]chan *nsq.Message),
 		Producer: producer,
-		APICfg:   apiCfg,
+		Cfg:      apiCfg,
 		NSQCfg:   nsqCfg,
 	}
 
