@@ -40,7 +40,7 @@ func Test_ListController_int(t *testing.T) {
 		err := ListControllerCreate(createJSON, ctx)
 		So(err, ShouldBeNil)
 
-		// apiServer.Stop()
+		apiServer.Stop()
 
 		// const Test_ListController = "Test_ListController"
 		// const NSQChannel = "test"
