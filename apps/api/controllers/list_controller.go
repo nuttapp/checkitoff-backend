@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
-	"github.com/bitly/go-nsq"
 	"github.com/nuttapp/checkitoff-backend/apps/api"
 	"github.com/nuttapp/checkitoff-backend/common/util"
 	"github.com/nuttapp/checkitoff-backend/dal"
@@ -20,20 +20,21 @@ const (
 	CreateListMsgValidationError  = "Validation failed for CreateListMsg"
 )
 
-func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
-	if c.Cfg == nil {
+func ListControllerCreate(jsonText []byte, ctx *api.APIContext) error {
+	if ctx.Cfg == nil {
 		return errors.New("apiCfg cannot be nil")
 	}
 
 	msg, err := dal.NewListMsg(dal.MsgMethodCreate, jsonText)
+
 	if err != nil {
 		return err
 	}
 
 	server := dal.Server{
-		Hostname:  c.Cfg.Server.Hostname,
-		IPAddress: c.Cfg.Server.IPAddress,
-		Role:      c.Cfg.Server.Role,
+		Hostname:  ctx.Cfg.Server.Hostname,
+		IPAddress: ctx.Cfg.Server.IPAddress,
+		Role:      ctx.Cfg.Server.Role,
 	}
 	msg.Servers = append(msg.Servers, server)
 
@@ -42,21 +43,17 @@ func ListControllerCreate(jsonText []byte, c *api.APIContext) error {
 		return util.NewError(CreateListMsgValidationError, err)
 	}
 
-	producer, err := nsq.NewProducer(c.Cfg.NSQ.ProducerTCPAddr, c.NSQCfg)
-	if err != nil {
-		return util.NewError(ProducerConnectionError, err)
-	}
-
 	b, err := json.Marshal(msg)
 	if err != nil {
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
-	err = producer.Publish(c.Cfg.NSQ.PubTopic, b)
+	replyChan, err := ctx.PublishMsg(msg.ID, b)
 	if err != nil {
 		return util.NewError(ProducerPublishError, err)
 	}
-
+	foo := <-replyChan
+	fmt.Println(foo)
 	// - validate json
 	// ? authenticate the user
 	// - Create create-list-event on NSQ

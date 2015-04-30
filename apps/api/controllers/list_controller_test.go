@@ -1,13 +1,10 @@
 package controllers
 
 import (
-	"bytes"
-	"log"
 	"testing"
 
 	"github.com/bitly/go-nsq"
 	"github.com/nuttapp/checkitoff-backend/apps/api"
-	"github.com/nuttapp/checkitoff-backend/dal"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -30,43 +27,48 @@ var createJSON = []byte(`
 	}`)
 
 func Test_ListController_int(t *testing.T) {
-	const NSQChannel = "test"
-
-	apiContext := api.NewContext("test")
-	apiContext.Cfg.NSQ.PubTopic = "Test_ListController"
-	apiCfg := apiContext.Cfg
-	nsqCfg := apiContext.NSQCfg
+	ctx := api.NewContext("test")
+	ctx.Cfg.NSQ.PubTopic = "api_messages"
+	ctx.Cfg.NSQ.SubTopic = "api_messages"
+	ctx.Cfg.NSQ.SubChannel = "api_messages"
 
 	Convey("Should enqueue ListMsg on NSQ", t, func() {
-		err := ListControllerCreate(createJSON, apiContext)
+		apiServer := api.APIServer{Ctx: ctx}
+		apiServer.Start()
+		// apiServer.CreateTopic("Test_ListController")
+
+		err := ListControllerCreate(createJSON, ctx)
 		So(err, ShouldBeNil)
 
-		th := &testHandler{
-			testChan: make(chan *nsq.Message),
-		}
+		// apiServer.Stop()
 
-		consumer, err := nsq.NewConsumer(apiCfg.NSQ.PubTopic, NSQChannel, nsqCfg)
-		So(err, ShouldBeNil)
-
-		var logBuf bytes.Buffer
-		logger := log.New(&logBuf, "", log.LstdFlags)
-		consumer.SetLogger(logger, nsq.LogLevelDebug)
-
-		consumer.AddHandler(th)
-		err = consumer.ConnectToNSQLookupd(apiCfg.NSQ.LookupdHTTPAddr)
-		So(err, ShouldBeNil)
-
-		dequeuedMsg := <-th.testChan
-		msg, err := dal.DeserializeListMsg(dequeuedMsg.Body)
-		So(err, ShouldBeNil)
-		So(msg, ShouldNotBeNil)
-		So(msg.Data.Title, ShouldEqual, "Trader Joes")
-		So(msg.Data.ID, ShouldNotBeEmpty)
-		So(msg.ID, ShouldNotBeEmpty)
-
-		// waiting for consumer to stop take about 10ms
-		consumer.Stop()
-		<-consumer.StopChan
+		// const Test_ListController = "Test_ListController"
+		// const NSQChannel = "test"
+		// consumer, err := nsq.NewConsumer(ctx.Cfg.NSQ.PubTopic, NSQChannel, ctx.NSQCfg)
+		// So(err, ShouldBeNil)
+		// //
+		// var logBuf bytes.Buffer
+		// logger := log.New(&logBuf, "", log.LstdFlags)
+		// consumer.SetLogger(logger, nsq.LogLevelDebug)
+		//
+		// th := &testHandler{
+		// 	testChan: make(chan *nsq.Message),
+		// }
+		// consumer.AddHandler(th)
+		// err = consumer.ConnectToNSQLookupd(ctx.Cfg.NSQ.LookupdHTTPAddr)
+		// So(err, ShouldBeNil)
+		//
+		// dequeuedMsg := <-th.testChan
+		// msg, err := dal.DeserializeListMsg(dequeuedMsg.Body)
+		// So(err, ShouldBeNil)
+		// So(msg, ShouldNotBeNil)
+		// So(msg.Data.Title, ShouldEqual, "Trader Joes")
+		// So(msg.Data.ID, ShouldNotBeEmpty)
+		// So(msg.ID, ShouldNotBeEmpty)
+		//
+		// // waiting for consumer to stop take about 10ms
+		// consumer.Stop()
+		// <-consumer.StopChan
 		// fmt.Println(logBuf.String())
 	})
 }
