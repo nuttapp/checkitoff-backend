@@ -1,43 +1,132 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
+	"sync"
+
 	"github.com/bitly/go-nsq"
 	"github.com/nuttapp/checkitoff-backend/apps/api/config"
+	"github.com/nuttapp/checkitoff-backend/dal"
 )
 
 type APIServer struct {
-	Ctx *APIContext
+	Consumer *nsq.Consumer
+	Ctx      *APIContext
 }
 
 func (s *APIServer) Start() {
-	// start listening for msessages from nsq
+	// start listening for messages from nsq
 	// start listening on endpoints
+	consumer, err := nsq.NewConsumer(s.Ctx.Cfg.NSQ.SubTopic, s.Ctx.Cfg.NSQ.SubChannel, s.Ctx.NSQCfg)
+	if err != nil {
+		panic(err)
+	}
+
+	// var logBuf bytes.Buffer
+	// logger := log.New(&logBuf, "", log.LstdFlags)
+	// consumer.SetLogger(logger, nsq.LogLevelDebug)
+
+	consumer.AddHandler(s)
+	err = consumer.ConnectToNSQLookupd(s.Ctx.Cfg.NSQ.LookupdHTTPAddr)
+	if err != nil {
+		panic(err)
+	}
+
+	s.Consumer = consumer
 }
 
 func (s *APIServer) Stop() {
+	// waiting for consumer to stop take about 10ms
+	fmt.Println("Stopping producer...")
+	s.Ctx.Producer.Stop()
+	fmt.Println("Stopping consumer...")
+	s.Consumer.Stop()
+	<-s.Consumer.StopChan
+
 	// disconnect producer
 	// disconnect consumer
 }
 
-func PublishMsg(ctx *APIContext, id string, msg []byte) (chan *nsq.Message, error) {
-	// save the id into db
-	// send message to nsq
-	err := ctx.Producer.Publish(ctx.Cfg.NSQ.ProducerTCPAddr, msg)
-	return nil, err
+func (s *APIServer) CreateTopic(topic string) {
+	if len(topic) == 0 {
+		panic("topic cannot be empty")
+	}
+	if len(s.Ctx.Cfg.NSQ.LookupdHTTPAddr) == 0 {
+		panic("LookupdHttpAddr cannot be empty")
+	}
+	url := fmt.Sprintf("http://%s/create_topic?topic=%s", s.Ctx.Cfg.NSQ.LookupdHTTPAddr, topic)
+	res, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	if res.StatusCode != http.StatusOK {
+		errMsg := fmt.Sprintf("Couldn't create topic \"%s\". Status Code %d", topic, res.StatusCode)
+		panic(errMsg)
+	}
+	fmt.Printf("Createed topic %s. Status \"%s\"\n", topic, res.Status)
 }
 
-func (s *APIServer) HandleMessage() {
+// user connects to nginx @ http://.../api/ws/pub/user_id/broadcast_id/
+// api server has a long polling connection to broadcast_id
+// user sends command to create list
+// api server enqueues ListMsg on NSQ topic "api_messages"
+// api server sends back the id of the request to the client "successful enqueue"
+// client has the id
+// client waits for validation of request
+
+// persister dequeues ListMsg on NSQ topic "api_messages"
+// persister saves it into cassandra
+// persistor sends ListMsg back on api_replies
+
+// notifier listens on NSQ api_replies
+// notifier makes request to http://api_server/api/ws/user_id/
+
+func (s *APIServer) HandleMessage(msg *nsq.Message) error {
+	fmt.Printf("received msg: %s\n", msg.ID)
+	listMsg, err := dal.DeserializeListMsg(msg.Body)
+	if err != nil {
+		return err
+	}
+	s.Ctx.guard.Lock()
+	replyChan, ok := s.Ctx.Messages[listMsg.ID]
+	s.Ctx.guard.Unlock()
+
+	if ok {
+		replyChan <- msg
+	} else {
+		fmt.Println("could not find message")
+	}
+
 	// receive message from nsq
 	// lookup id and get channel
 	// if id exists send the received msg on channel
 	// if id not exist log error
+	// mh.testChan <- msg
+	return nil
 }
 
 type APIContext struct {
 	Messages map[string]chan *nsq.Message
+	guard    sync.RWMutex
+
 	NSQCfg   *nsq.Config
 	Cfg      *config.Config
 	Producer *nsq.Producer
+}
+
+func (ctx *APIContext) PublishMsg(msgID string, msg []byte) (chan *nsq.Message, error) {
+	reply := make(chan *nsq.Message)
+	ctx.guard.Lock()
+	ctx.Messages[msgID] = reply
+	ctx.guard.Unlock()
+
+	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, msg)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("Message published successfully...")
+	return reply, err
 }
 
 // NewAPIServer(APIContext)
