@@ -5,6 +5,7 @@ type NSQ struct {
 	LookupdHTTPAddr string
 	PubTopic        string
 	SubTopic        string
+	SubChannel      string
 }
 
 type Server struct {
@@ -30,7 +31,8 @@ func NewConfig() *Config {
 			ProducerTCPAddr: "127.0.0.1:4150",
 			LookupdHTTPAddr: "127.0.0.1:4161",
 			PubTopic:        "api_messages",
-			SubTopic:        "api01",
+			SubTopic:        "api_replies",
+			SubChannel:      "client_handler",
 		},
 	}
 	return config
