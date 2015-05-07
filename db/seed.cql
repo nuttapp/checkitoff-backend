@@ -49,21 +49,57 @@ select * from list where users contains 'greg';
 SELECT list_id, category, title, created_at, updated_at, users, is_hidden FROM list;
 
 --
--- list
+-- list_item
 --
 USE demodb;
 DROP TABLE list_item;
 CREATE TABLE list_item (
     list_id uuid,
     list_item_id uuid,
+    checked timestamp,
+    unchecked timestamp,
     title varchar,
     photo varchar,
-    is_hidden boolean,
     created_at timeuuid,
     updated_at timeuuid,
-    PRIMARY KEY (list_id, title, list_item_id)
+    PRIMARY KEY (list_id, list_item_id)
 );
+INSERT INTO list_item (list_id, title, list_item_id, checked) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'eggs', 62c36092-82a1-3a00-93d1-46196ee77205, '2015-05-07 12:23:24.501' );
+INSERT INTO list_item (list_id, title, list_item_id) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77204, 'bacon', 62c36092-82a1-3a00-93d1-46196ee77206);
 
+SELECT * FROM list_item;
+
+---
+--- list_item_event
+--- 
+
+USE demodb;
+DROP TABLE list_item_events;
+CREATE TABLE list_item_events (
+    list_id         uuid,
+    list_item_id    uuid,
+    checked         int,
+    time       timeuuid,
+    PRIMARY KEY (list_id, list_item_id, time)
+) WITH CLUSTERING ORDER BY (list_item_id ASC, time DESC); 
+
+INSERT INTO list_item_events (list_id, list_item_id, time, checked) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77201, 62c36092-82a1-3a00-93d1-46196ee77211, now(), 1);
+INSERT INTO list_item_events (list_id, list_item_id, time, checked) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77201, 62c36092-82a1-3a00-93d1-46196ee77211, now(), 0);
+INSERT INTO list_item_events (list_id, list_item_id, time, checked) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77201, 62c36092-82a1-3a00-93d1-46196ee77212, now(), 1);
+INSERT INTO list_item_events (list_id, list_item_id, time, checked) 
+    VALUES (62c36092-82a1-3a00-93d1-46196ee77201, 62c36092-82a1-3a00-93d1-46196ee77212, now(), 0);
+
+SELECT * FROM list_item_events;
+
+SELECT * FROM list_item_events 
+where list_id = 62c36092-82a1-3a00-93d1-46196ee77201 
+and list_item_id = 62c36092-82a1-3a00-93d1-46196ee77212
+limit 1;
 
 
 -- DROP INDEX list_category_idx;
