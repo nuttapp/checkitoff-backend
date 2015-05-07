@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/nuttapp/checkitoff-backend/apps/api"
 	"github.com/nuttapp/checkitoff-backend/common/util"
@@ -48,12 +47,12 @@ func ListControllerCreate(jsonText []byte, ctx *api.APIContext) error {
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
-	replyChan, err := ctx.PublishMsg(msg.ID, b)
+	err = ctx.Publish(msg.ID, b)
 	if err != nil {
 		return util.NewError(ProducerPublishError, err)
 	}
-	foo := <-replyChan
-	fmt.Println(foo)
+	// foo := <-replyChan
+	// fmt.Println(foo)
 	// - validate json
 	// ? authenticate the user
 	// - Create create-list-event on NSQ

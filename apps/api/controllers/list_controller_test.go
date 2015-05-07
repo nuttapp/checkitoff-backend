@@ -33,14 +33,14 @@ func Test_ListController_int(t *testing.T) {
 	ctx.Cfg.NSQ.SubChannel = "api_messages"
 
 	Convey("Should enqueue ListMsg on NSQ", t, func() {
-		apiServer := api.APIServer{Ctx: ctx}
-		apiServer.Start()
-		// apiServer.CreateTopic("Test_ListController")
+		// apiServer := api.APIServer{Ctx: ctx}
+		// apiServer.Start()
 
 		err := ListControllerCreate(createJSON, ctx)
+		// fmt.Println("sdf")
 		So(err, ShouldBeNil)
 
-		apiServer.Stop()
+		// apiServer.Stop()
 
 		// const Test_ListController = "Test_ListController"
 		// const NSQChannel = "test"
