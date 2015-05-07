@@ -10,12 +10,19 @@ import (
 	"github.com/nuttapp/checkitoff-backend/dal"
 )
 
+const (
+	ProducerConnectionError = "Failed to connect to NSQ producer"
+	ProducerPublishError    = "Failed to publish to NSQ producer"
+)
+
 type APIServer struct {
 	Consumer *nsq.Consumer
 	Ctx      *APIContext
 }
 
 func (s *APIServer) Start() {
+	fmt.Printf("Starting consumer for topic: \"%s\", channel: \"%s\"...",
+		s.Ctx.Cfg.NSQ.SubTopic, s.Ctx.Cfg.NSQ.SubChannel)
 	// start listening for messages from nsq
 	// start listening on endpoints
 	consumer, err := nsq.NewConsumer(s.Ctx.Cfg.NSQ.SubTopic, s.Ctx.Cfg.NSQ.SubChannel, s.Ctx.NSQCfg)
@@ -67,21 +74,6 @@ func (s *APIServer) CreateTopic(topic string) {
 	fmt.Printf("Createed topic %s. Status \"%s\"\n", topic, res.Status)
 }
 
-// user connects to nginx @ http://.../api/ws/pub/user_id/broadcast_id/
-// api server has a long polling connection to broadcast_id
-// user sends command to create list
-// api server enqueues ListMsg on NSQ topic "api_messages"
-// api server sends back the id of the request to the client "successful enqueue"
-// client has the id
-// client waits for validation of request
-
-// persister dequeues ListMsg on NSQ topic "api_messages"
-// persister saves it into cassandra
-// persistor sends ListMsg back on api_replies
-
-// notifier listens on NSQ api_replies
-// notifier makes request to http://api_server/api/ws/user_id/
-
 func (s *APIServer) HandleMessage(msg *nsq.Message) error {
 	fmt.Printf("received msg: %s\n", msg.ID)
 	listMsg, err := dal.DeserializeListMsg(msg.Body)
@@ -106,7 +98,19 @@ func (s *APIServer) HandleMessage(msg *nsq.Message) error {
 	return nil
 }
 
+// validate token compare hash of nic id & token to what's stored in db
+// save to db
+type Req struct {
+	ID   string                 // ID assigned to an individual request
+	Msgs map[string]interface{} // Messages generated as part of the request
+}
+
+// Done sends the array of bytes to the client that initiated the request
+func (r *Req) Done(data []byte) {
+}
+
 type APIContext struct {
+	Requests map[string]Req
 	Messages map[string]chan *nsq.Message
 	guard    sync.RWMutex
 
@@ -115,7 +119,15 @@ type APIContext struct {
 	Producer *nsq.Producer
 }
 
-func (ctx *APIContext) PublishMsg(msgID string, msg []byte) (chan *nsq.Message, error) {
+func (ctx *APIContext) Publish(reqID string, msg []byte) error {
+	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, msg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ctx *APIContext) PublishWithReplyChan(msgID string, msg []byte) (chan *nsq.Message, error) {
 	reply := make(chan *nsq.Message)
 	ctx.guard.Lock()
 	ctx.Messages[msgID] = reply
@@ -143,7 +155,7 @@ func NewContext(environment string) *APIContext {
 
 	producer, err := nsq.NewProducer(apiCfg.NSQ.ProducerTCPAddr, nsqCfg)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("%s: %s", ProducerConnectionError, err))
 	}
 
 	context := &APIContext{
