@@ -76,7 +76,7 @@ func (s *APIServer) CreateTopic(topic string) {
 
 func (s *APIServer) HandleMessage(msg *nsq.Message) error {
 	fmt.Printf("received msg: %s\n", msg.ID)
-	listMsg, err := dal.DeserializeListMsg(msg.Body)
+	listMsg, err := dal.DeserializeListEvent(msg.Body)
 	if err != nil {
 		return err
 	}
@@ -119,21 +119,21 @@ type APIContext struct {
 	Producer *nsq.Producer
 }
 
-func (ctx *APIContext) Publish(reqID string, msg []byte) error {
-	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, msg)
+func (ctx *APIContext) Publish(reqID string, event []byte) error {
+	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, event)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ctx *APIContext) PublishWithReplyChan(msgID string, msg []byte) (chan *nsq.Message, error) {
+func (ctx *APIContext) PublishWithReplyChan(eID string, event []byte) (chan *nsq.Message, error) {
 	reply := make(chan *nsq.Message)
 	ctx.guard.Lock()
-	ctx.Messages[msgID] = reply
+	ctx.Messages[eID] = reply
 	ctx.guard.Unlock()
 
-	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, msg)
+	err := ctx.Producer.Publish(ctx.Cfg.NSQ.PubTopic, event)
 	if err != nil {
 		return nil, err
 	}

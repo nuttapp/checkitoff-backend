@@ -19,8 +19,8 @@ type List struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-type ListMsg struct {
-	Msg
+type ListEvent struct {
+	Event
 	Servers []Server `json:"servers"`
 	Client  Client   `json:"client"`
 	User    User     `json:"user"`
@@ -28,56 +28,56 @@ type ListMsg struct {
 	Err     error    `json:"error"`
 }
 
-// NewListMsg constructs ListMsg structs
-// It takes the json sent by a client, and creates a valid LisMsg struct,
+// NewListEvent constructs ListEvent structs
+// It takes the json sent by a client, and creates a valid ListEvent struct,
 // which can be sent to NSQ and consumed by our apps (persistor, logger etc..)
-// You should not try to construct a ListMsg manually
-func NewListMsg(msgMethod string, msgJSON []byte) (*ListMsg, error) {
-	msg, err := DeserializeListMsg(msgJSON)
+// You should not try to construct a ListEvent manually
+func NewListEvent(eMethod string, eJSON []byte) (*ListEvent, error) {
+	e, err := DeserializeListEvent(eJSON)
 	if err != nil {
 		return nil, err
 	}
 
-	msgID, err := gocql.RandomUUID()
+	eID, err := gocql.RandomUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	switch msgMethod {
+	switch eMethod {
 	case MsgMethodCreate:
-		msg.ID = msgID.String()
+		e.ID = eID.String()
 
 		listID, err := gocql.RandomUUID()
 		if err != nil {
 			return nil, err
 		}
-		msg.Data.ID = listID.String()
+		e.Data.ID = listID.String()
 
-		msg.Data.CreatedAt = time.Now().UTC()
-		msg.Data.UpdatedAt = msg.Data.CreatedAt
+		e.Data.CreatedAt = time.Now().UTC()
+		e.Data.UpdatedAt = e.Data.CreatedAt
 
 		// add the user creating the list to users of the list
-		msg.Data.Users = append(msg.Data.Users, msg.User.ID)
+		e.Data.Users = append(e.Data.Users, e.User.ID)
 	case MsgMethodUpdate:
-		msg.ID = msgID.String()
-		msg.Data.UpdatedAt = time.Now().UTC()
+		e.ID = eID.String()
+		e.Data.UpdatedAt = time.Now().UTC()
 	}
 
-	return msg, nil
+	return e, nil
 }
 
-// DeserializeCreateListMsg deserializes a JSON serialized CreateListMsg struct
-func DeserializeListMsg(jsonText []byte) (*ListMsg, error) {
-	var event ListMsg
-	err := json.Unmarshal(jsonText, &event)
+// DeserializeListEvent deserializes a ListEvent formatted as JSON
+func DeserializeListEvent(eJSON []byte) (*ListEvent, error) {
+	var event ListEvent
+	err := json.Unmarshal(eJSON, &event)
 	if err != nil {
 		return nil, err
 	}
 	return &event, nil
 }
 
-func (e *ListMsg) ValidateMsg() error {
-	err := ValidateMsg(e.Client, e.User, e.Msg, e.Servers)
+func (e *ListEvent) Validate() error {
+	err := ValidateEvent(e.Client, e.User, e.Event, e.Servers)
 	if err != nil {
 		return err
 	}
@@ -89,23 +89,23 @@ func (e *ListMsg) ValidateMsg() error {
 	}
 	isValidMethod := e.Method == MsgMethodCreate || e.Method == MsgMethodUpdate || e.Method == MsgMethodDelete
 	if !isValidMethod {
-		return errors.New(InvalidMsgMethodError)
+		return errors.New(InvalidEventMethodError)
 	}
 	if e.Resource != MsgResourceList {
-		return errors.New(InvalidMsgResourceError)
+		return errors.New(InvalidEventResourceError)
 	}
 	return nil
 }
 
-func GetListCQL(msg *ListMsg) (string, []interface{}) {
+func GetListCQL(e *ListEvent) (string, []interface{}) {
 	cql := `SELECT list_id, category, title, users, is_hidden, created_at, updated_at
 			FROM list 
 			WHERE list_id = ? LIMIT 1`
-	params := []interface{}{msg.Data.ID}
+	params := []interface{}{e.Data.ID}
 	return cql, params
 }
 
-func (d *DAL) GetList(msg *ListMsg) (*List, error) {
+func (d *DAL) GetList(e *ListEvent) (*List, error) {
 	var id gocql.UUID
 	var category string
 	var title string
@@ -114,7 +114,7 @@ func (d *DAL) GetList(msg *ListMsg) (*List, error) {
 	var createdAt time.Time
 	var updatedAt time.Time
 
-	cql, params := GetListCQL(msg)
+	cql, params := GetListCQL(e)
 	q := d.session.Query(cql, params...)
 
 	err := q.Scan(&id, &category, &title, &users, &isHidden, &createdAt, &updatedAt)
@@ -134,8 +134,8 @@ func (d *DAL) GetList(msg *ListMsg) (*List, error) {
 	return list, nil
 }
 
-func CreateOrUpdateListCQL(msg *ListMsg) (string, []interface{}, error) {
-	msgBytes, err := json.Marshal(msg)
+func CreateOrUpdateListCQL(e *ListEvent) (string, []interface{}, error) {
+	eBytes, err := json.Marshal(e)
 	if err != nil {
 		return "", []interface{}{}, fmt.Errorf("DAL.CreateOrUpdateListCQL: %s\n", err.Error())
 	}
@@ -143,20 +143,20 @@ func CreateOrUpdateListCQL(msg *ListMsg) (string, []interface{}, error) {
 	cql := `UPDATE list SET category=?, title=?, users=?, is_hidden=?, created_at=?, updated_at=?, msg=?
 			 WHERE list_id = ?`
 
-	params := []interface{}{msg.Data.Category, msg.Data.Title, msg.Data.Users, msg.Data.IsHidden,
-		msg.Data.CreatedAt, msg.Data.UpdatedAt, msgBytes,
-		msg.Data.ID}
+	params := []interface{}{e.Data.Category, e.Data.Title, e.Data.Users, e.Data.IsHidden,
+		e.Data.CreatedAt, e.Data.UpdatedAt, eBytes,
+		e.Data.ID}
 
 	return cql, params, nil
 }
 
-func (d *DAL) CreateOrUpdateList(msg *ListMsg) error {
-	err := msg.ValidateMsg()
+func (d *DAL) CreateOrUpdateList(e *ListEvent) error {
+	err := e.Validate()
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
 	}
 
-	cql, params, err := CreateOrUpdateListCQL(msg)
+	cql, params, err := CreateOrUpdateListCQL(e)
 	if err != nil {
 		return fmt.Errorf("DAL.CreateOrUpdateList: %s\n", err.Error())
 	}
@@ -170,8 +170,8 @@ func (d *DAL) CreateOrUpdateList(msg *ListMsg) error {
 	return nil
 }
 
-func (d *DAL) DeleteList(msg *ListMsg) error {
-	insertList := d.session.Query(`DELETE FROM list WHERE list_id = ?`, msg.Data.ID)
+func (d *DAL) DeleteList(e *ListEvent) error {
+	insertList := d.session.Query(`DELETE FROM list WHERE list_id = ?`, e.Data.ID)
 	err := insertList.Exec()
 	if err != nil {
 		return err

@@ -24,7 +24,7 @@ func ListControllerCreate(jsonText []byte, ctx *api.APIContext) error {
 		return errors.New("apiCfg cannot be nil")
 	}
 
-	msg, err := dal.NewListMsg(dal.MsgMethodCreate, jsonText)
+	e, err := dal.NewListEvent(dal.MsgMethodCreate, jsonText)
 
 	if err != nil {
 		return err
@@ -35,19 +35,19 @@ func ListControllerCreate(jsonText []byte, ctx *api.APIContext) error {
 		IPAddress: ctx.Cfg.Server.IPAddress,
 		Role:      ctx.Cfg.Server.Role,
 	}
-	msg.Servers = append(msg.Servers, server)
+	e.Servers = append(e.Servers, server)
 
-	err = msg.ValidateMsg()
+	err = e.Validate()
 	if err != nil {
 		return util.NewError(CreateListMsgValidationError, err)
 	}
 
-	b, err := json.Marshal(msg)
+	b, err := json.Marshal(e)
 	if err != nil {
 		return util.NewError(CreateListMsgJSONMarshalError, err)
 	}
 
-	err = ctx.Publish(msg.ID, b)
+	err = ctx.Publish(e.ID, b)
 	if err != nil {
 		return util.NewError(ProducerPublishError, err)
 	}

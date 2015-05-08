@@ -7,23 +7,23 @@ import (
 )
 
 const (
-	// Base msg
-	MissingMsgIDError       = "Msg ID cannot be empty"
-	MissingMsgMethodError   = "Msg Method cannot be empty"
-	MissingMsgResourceError = "Msg Resource cannot be empty"
-	InvalidMsgMethodError   = "Invalid msg Method, for the given Resource"
-	InvalidMsgResourceError = "Invalid msg Resource"
+	// Base event
+	MissingEventIDError       = "Event ID cannot be empty"
+	MissingEventMethodError   = "Event Method cannot be empty"
+	MissingEventResourceError = "Event Resource cannot be empty"
+	InvalidEventMethodError   = "Unsupported Event Method for the given Resource"
+	InvalidEventResourceError = "Invalid Event Resource"
 
 	// Client
-	MissingClientIDError         = "Msg client ID cannot be empty"
-	MissingClientDeviceTypeError = "Msg client DeviceType cannot be empty"
+	MissingClientIDError         = "Event Client ID cannot be empty"
+	MissingClientDeviceTypeError = "Event Client DeviceType cannot be empty"
 	// User
-	MissingUserIDError = "Msg user ID cannot be empty"
+	MissingUserIDError = "Event User ID cannot be empty"
 	// Server
-	MissingServersField         = "Msg Servers array caanot be empty"
-	MissingServerHostnameError  = "Msg server Hostname cannot be empty"
-	MissingServerIPAddressError = "Msg server IPAddress cannot be empty"
-	MissingServerRoleError      = "Msg server Role cannot be empty"
+	MissingServersField         = "Event Servers array cannot be empty"
+	MissingServerHostnameError  = "Event Server Hostname cannot be empty"
+	MissingServerIPAddressError = "Event Server IPAddress cannot be empty"
+	MissingServerRoleError      = "Event Server Role cannot be empty"
 	// List
 	MissingListIDError    = "List ID cannot be emtpy"
 	MissingListTitleError = "List Title cannot be empty"
@@ -80,14 +80,14 @@ type User struct {
 	Name string `json:"name"`
 }
 
-type Msg struct {
+type Event struct {
 	Method   string `json:"method"`
 	Resource string `json:"resource"`
 	ID       string `json:"id"`
 }
 
 // ValidateEvent examples the fields that every event needs and throws an error if they're blank
-func ValidateMsg(c Client, u User, e Msg, s []Server) error {
+func ValidateEvent(c Client, u User, e Event, s []Server) error {
 	if len(c.ID) == 0 {
 		return errors.New(MissingClientIDError)
 	}
@@ -98,13 +98,13 @@ func ValidateMsg(c Client, u User, e Msg, s []Server) error {
 		return errors.New(MissingUserIDError)
 	}
 	if len(e.Method) == 0 {
-		return errors.New(MissingMsgMethodError)
+		return errors.New(MissingEventMethodError)
 	}
 	if len(e.Resource) == 0 {
-		return errors.New(MissingMsgResourceError)
+		return errors.New(MissingEventResourceError)
 	}
 	if len(e.ID) == 0 {
-		return errors.New(MissingMsgIDError)
+		return errors.New(MissingEventIDError)
 	}
 	if len(s) == 0 {
 		return errors.New(MissingServersField)
@@ -168,15 +168,15 @@ func (d *DAL) initSession() error {
 	return nil
 }
 
-func (d *DAL) HandleListMsg(msg *ListMsg) error {
+func (d *DAL) HandleListEvent(e *ListEvent) error {
 	err := d.initSession()
 	if err != nil {
 		return err
 	}
 
-	switch msg.Method {
+	switch e.Method {
 	case MsgMethodCreate, MsgMethodUpdate:
-		return d.CreateOrUpdateList(msg)
+		return d.CreateOrUpdateList(e)
 
 	}
 	return nil

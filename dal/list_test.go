@@ -38,41 +38,41 @@ func Test_DeserializeistMsg_unit(t *testing.T) {
 				}
 			}`)
 
-		Convey("should deserialize json into ListMsg", func() {
-			msg, err := DeserializeListMsg(createListMsgJSON)
+		Convey("should deserialize json into ListEvent", func() {
+			e, err := DeserializeListEvent(createListMsgJSON)
 
 			So(err, ShouldBeNil)
-			So(msg, ShouldNotBeNil)
-			So(msg.Method, ShouldEqual, "create")
-			So(msg.Resource, ShouldEqual, "list")
-			So(msg.Servers[0].Hostname, ShouldEqual, "localhost")
-			So(msg.Servers[0].IPAddress, ShouldEqual, "127.0.0.1")
-			So(msg.Servers[0].TTL, ShouldEqual, 1)
-			So(msg.Servers[0].Role, ShouldEqual, "api")
-			So(msg.Client.ID, ShouldEqual, "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433")
-			So(msg.Client.DeviceType, ShouldEqual, "iPhone")
-			So(msg.Client.OsVersion, ShouldEqual, "7,2")
-			So(msg.User.ID, ShouldEqual, "0C6B2206-CAD1-4F9C-BE17-74977A257877")
-			So(msg.User.Name, ShouldEqual, "Greg")
-			So(msg.Data.ID, ShouldEqual, "12345")
-			So(msg.Data.Title, ShouldEqual, "Trader Joes")
-			So(msg.Data.IsHidden, ShouldEqual, true)
-			So(msg.Data.Category, ShouldEqual, "shopping")
-			So(msg.Data.Users[0], ShouldEqual, "greg")
-			So(msg.Data.Users[1], ShouldEqual, "jess")
+			So(e, ShouldNotBeNil)
+			So(e.Method, ShouldEqual, "create")
+			So(e.Resource, ShouldEqual, "list")
+			So(e.Servers[0].Hostname, ShouldEqual, "localhost")
+			So(e.Servers[0].IPAddress, ShouldEqual, "127.0.0.1")
+			So(e.Servers[0].TTL, ShouldEqual, 1)
+			So(e.Servers[0].Role, ShouldEqual, "api")
+			So(e.Client.ID, ShouldEqual, "C0085E97-9BCB-4BAA-9A1A-C5AFF37FF433")
+			So(e.Client.DeviceType, ShouldEqual, "iPhone")
+			So(e.Client.OsVersion, ShouldEqual, "7,2")
+			So(e.User.ID, ShouldEqual, "0C6B2206-CAD1-4F9C-BE17-74977A257877")
+			So(e.User.Name, ShouldEqual, "Greg")
+			So(e.Data.ID, ShouldEqual, "12345")
+			So(e.Data.Title, ShouldEqual, "Trader Joes")
+			So(e.Data.IsHidden, ShouldEqual, true)
+			So(e.Data.Category, ShouldEqual, "shopping")
+			So(e.Data.Users[0], ShouldEqual, "greg")
+			So(e.Data.Users[1], ShouldEqual, "jess")
 		})
 		Convey("should return error with invalid json", func() {
-			msg, err := DeserializeListMsg([]byte("asdf"))
+			e, err := DeserializeListEvent([]byte("asdf"))
 			So(err, ShouldNotBeNil)
-			So(msg, ShouldBeNil)
+			So(e, ShouldBeNil)
 		})
 	})
 }
 
-func Test_NewListMsg_unit(t *testing.T) {
-	Convey("NewListMsg()", t, func() {
-		Convey("should generate msg.ID, Data.ID, and users array", func() {
-			msg, err := NewListMsg(MsgMethodCreate, []byte(`{
+func Test_NewListEvent_unit(t *testing.T) {
+	Convey("NewListEvent()", t, func() {
+		Convey("should generate Event.ID, Data.ID, and users array", func() {
+			e, err := NewListEvent(MsgMethodCreate, []byte(`{
 				"method": "create",
 				"resource": "list",
 				"user": {
@@ -83,18 +83,18 @@ func Test_NewListMsg_unit(t *testing.T) {
 				}
 			}`))
 			So(err, ShouldBeNil)
-			So(msg, ShouldNotBeNil)
-			So(msg.ID, ShouldNotBeEmpty)
-			So(msg.Data.ID, ShouldNotBeEmpty)
-			So(msg.Data.Users[0], ShouldEqual, "12345")
-			So(msg.Data.Title, ShouldEqual, "title")
-			So(msg.Method, ShouldEqual, MsgMethodCreate)
-			So(msg.Resource, ShouldEqual, MsgResourceList)
-			So(msg.Data.UpdatedAt, ShouldResemble, msg.Data.CreatedAt)
+			So(e, ShouldNotBeNil)
+			So(e.ID, ShouldNotBeEmpty)
+			So(e.Data.ID, ShouldNotBeEmpty)
+			So(e.Data.Users[0], ShouldEqual, "12345")
+			So(e.Data.Title, ShouldEqual, "title")
+			So(e.Method, ShouldEqual, MsgMethodCreate)
+			So(e.Resource, ShouldEqual, MsgResourceList)
+			So(e.Data.UpdatedAt, ShouldResemble, e.Data.CreatedAt)
 		})
 		Convey("should update UpdatedAt & use data.id", func() {
 			timestamp := time.Now().UTC()
-			msg, err := NewListMsg(MsgMethodUpdate, []byte(`{
+			e, err := NewListEvent(MsgMethodUpdate, []byte(`{
 				"method": "update",
 				"resource": "list",
 				"data": {
@@ -103,84 +103,84 @@ func Test_NewListMsg_unit(t *testing.T) {
 				}
 			}`))
 			So(err, ShouldBeNil)
-			So(msg, ShouldNotBeNil)
-			So(msg.Method, ShouldEqual, MsgMethodUpdate)
-			So(msg.Resource, ShouldEqual, MsgResourceList)
-			So(msg.Data.ID, ShouldEqual, "12345")
-			So(msg.Method, ShouldEqual, MsgMethodUpdate)
-			So(msg.Data.UpdatedAt, ShouldHappenAfter, timestamp)
+			So(e, ShouldNotBeNil)
+			So(e.Method, ShouldEqual, MsgMethodUpdate)
+			So(e.Resource, ShouldEqual, MsgResourceList)
+			So(e.Data.ID, ShouldEqual, "12345")
+			So(e.Method, ShouldEqual, MsgMethodUpdate)
+			So(e.Data.UpdatedAt, ShouldHappenAfter, timestamp)
 		})
 	})
 }
 
-func Test_ListMsg_ValidateMsg_unit(t *testing.T) {
-	Convey("ValidateMsg()", t, func() {
-		msg := &ListMsg{
-			Msg: Msg{
-				ID:       "create-list-msg-id",
+func Test_ListEvent_Validate_unit(t *testing.T) {
+	Convey("Validate()", t, func() {
+		e := &ListEvent{
+			Event: Event{
+				ID:       "create-list-event-id",
 				Method:   "create",
 				Resource: "list",
 			},
 			Servers: []Server{
 				Server{
 					TTL:       1,
-					Hostname:  "create-list-msg-server-hostname",
-					IPAddress: "create-list-msg-server-ipaddress",
+					Hostname:  "create-list-event-server-hostname",
+					IPAddress: "create-list-event-server-ipaddress",
 					Role:      "api",
 				},
 			},
 			Client: Client{
-				ID:         "create-list-msg-client-id",
-				DeviceType: "create-list-msg-client-deveice-type",
+				ID:         "create-list-event-client-id",
+				DeviceType: "create-list-event-client-deveice-type",
 			},
 			User: User{
-				ID: "create-list-msg-user-id",
+				ID: "create-list-event-user-id",
 			},
 			Data: List{
-				ID:       "create-list-msg-list-id",
-				Title:    "create-list-msg-list-title",
+				ID:       "create-list-event-list-id",
+				Title:    "create-list-event-list-title",
 				Category: "shopping",
 				IsHidden: false,
 			},
 		}
 
-		// b, _ := json.MarshalIndent(msg, "", "  ")
+		// b, _ := json.MarshalIndent(event, "", "  ")
 		// fmt.Printf("%s", string(b))
 
 		Convey("Should return no error with base fields", func() {
-			err := msg.ValidateMsg()
+			err := e.Validate()
 			So(err, ShouldBeNil)
 		})
 
 		Convey("should return errror when", func() {
 			Convey("list id is blank", func() {
-				msg.Data.ID = ""
-				err := msg.ValidateMsg()
+				e.Data.ID = ""
+				err := e.Validate()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListIDError)
 			})
 			Convey("list title is blank", func() {
-				msg.Data.Title = ""
-				err := msg.ValidateMsg()
+				e.Data.Title = ""
+				err := e.Validate()
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, MissingListTitleError)
 			})
 			Convey("one of the base fields is blank", func() {
-				msg.ID = ""
-				err := msg.ValidateMsg()
+				e.ID = ""
+				err := e.Validate()
 				So(err, ShouldNotBeNil)
 			})
-			Convey("msg method is not valid", func() {
-				msg.Method = "invalid method type"
-				err := msg.ValidateMsg()
+			Convey("event method is not valid", func() {
+				e.Method = "invalid method type"
+				err := e.Validate()
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldContainSubstring, InvalidMsgMethodError)
+				So(err.Error(), ShouldContainSubstring, InvalidEventMethodError)
 			})
-			Convey("msg resource is not \"list\"", func() {
-				msg.Resource = "invalid resource"
-				err := msg.ValidateMsg()
+			Convey("event resource is not \"list\"", func() {
+				e.Resource = "invalid resource"
+				err := e.Validate()
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldContainSubstring, InvalidMsgResourceError)
+				So(err.Error(), ShouldContainSubstring, InvalidEventResourceError)
 			})
 		})
 	})
@@ -194,8 +194,8 @@ func Test_List_CRUD_int(t *testing.T) {
 	}
 	d, _ := NewDAL(cfg)
 
-	Convey("Given a ListMsg struct", t, func() {
-		var msg = &ListMsg{
+	Convey("Given a ListEvent struct", t, func() {
+		var e = &ListEvent{
 			Servers: []Server{
 				Server{
 					Hostname:  "localhost",
@@ -212,7 +212,7 @@ func Test_List_CRUD_int(t *testing.T) {
 				ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 				Name: "test-user-name",
 			},
-			Msg: Msg{
+			Event: Event{
 				ID:       gocql.TimeUUID().String(),
 				Method:   MsgMethodCreate,
 				Resource: MsgResourceList,
@@ -230,24 +230,24 @@ func Test_List_CRUD_int(t *testing.T) {
 
 		Convey("CreateOrUpdateList()", func() {
 			Convey("should save the list", func() {
-				err := d.CreateOrUpdateList(msg)
+				err := d.CreateOrUpdateList(e)
 				So(err, ShouldBeNil)
 
-				list, err := d.GetList(msg)
+				list, err := d.GetList(e)
 				So(err, ShouldBeNil)
 				So(list, ShouldNotBeNil)
-				So(list.ID, ShouldEqual, msg.Data.ID)
-				So(list.Title, ShouldEqual, msg.Data.Title)
-				So(list.Category, ShouldEqual, msg.Data.Category)
+				So(list.ID, ShouldEqual, e.Data.ID)
+				So(list.Title, ShouldEqual, e.Data.Title)
+				So(list.Category, ShouldEqual, e.Data.Category)
 				So(list.IsHidden, ShouldEqual, false)
-				So(list.Users, ShouldResemble, msg.Data.Users)
-				So(list.CreatedAt, ShouldHappenOnOrBefore, msg.Data.CreatedAt)
-				So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
+				So(list.Users, ShouldResemble, e.Data.Users)
+				So(list.CreatedAt, ShouldHappenOnOrBefore, e.Data.CreatedAt)
+				So(list.UpdatedAt, ShouldHappenOnOrBefore, e.Data.UpdatedAt)
 			})
 			Convey("should return error when", func() {
 				Convey("list ID is blank", func() {
-					msg.Data.ID = ""
-					err := d.CreateOrUpdateList(msg)
+					e.Data.ID = ""
+					err := d.CreateOrUpdateList(e)
 					So(err, ShouldNotBeNil)
 					So(err.Error(), ShouldContainSubstring, MissingListIDError)
 				})
@@ -255,27 +255,27 @@ func Test_List_CRUD_int(t *testing.T) {
 		})
 
 		Convey("should update the List", func() {
-			msg.Data.Title = "Target😡  "
-			err := d.CreateOrUpdateList(msg)
+			e.Data.Title = "Target😡  "
+			err := d.CreateOrUpdateList(e)
 			So(err, ShouldBeNil)
 
-			list, err := d.GetList(msg)
+			list, err := d.GetList(e)
 			So(err, ShouldBeNil)
 			So(list, ShouldNotBeNil)
-			So(list.ID, ShouldEqual, msg.Data.ID)
-			So(list.Title, ShouldEqual, msg.Data.Title)
-			So(list.Category, ShouldEqual, msg.Data.Category)
+			So(list.ID, ShouldEqual, e.Data.ID)
+			So(list.Title, ShouldEqual, e.Data.Title)
+			So(list.Category, ShouldEqual, e.Data.Category)
 			So(list.IsHidden, ShouldEqual, false)
-			So(list.Users, ShouldResemble, msg.Data.Users)
-			So(list.CreatedAt, ShouldHappenOnOrBefore, msg.Data.CreatedAt)
-			So(list.UpdatedAt, ShouldHappenOnOrBefore, msg.Data.UpdatedAt)
+			So(list.Users, ShouldResemble, e.Data.Users)
+			So(list.CreatedAt, ShouldHappenOnOrBefore, e.Data.CreatedAt)
+			So(list.UpdatedAt, ShouldHappenOnOrBefore, e.Data.UpdatedAt)
 		})
 
 		Convey("should delete the List", func() {
-			err := d.DeleteList(msg)
+			err := d.DeleteList(e)
 			So(err, ShouldBeNil)
 
-			list, err := d.GetList(msg)
+			list, err := d.GetList(e)
 			So(err.Error(), ShouldContainSubstring, gocql.ErrNotFound.Error())
 			So(list, ShouldBeNil)
 		})

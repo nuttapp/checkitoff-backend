@@ -60,7 +60,7 @@ func (mh *DALMessageHandler) HandleMessage(msg *nsq.Message) error {
 
 	switch cmd {
 	case "create-list":
-		cle, err := dal.DeserializeListMsg(msg.Body)
+		cle, err := dal.DeserializeListEvent(msg.Body)
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func SaveInviteUserToListMsg() {
 	// }
 }
 
-func SaveCreateListMsg(cle *dal.ListMsg) error {
+func SaveCreateListMsg(cle *dal.ListEvent) error {
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "demodb"
 	cluster.Consistency = gocql.Quorum

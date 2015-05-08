@@ -17,7 +17,7 @@ func Test_Models_unit(t *testing.T) {
 			ID:   "0C6B2206-CAD1-4F9C-BE17-74977A257877",
 			Name: "test-user-name",
 		}
-		m := Msg{
+		m := Event{
 			ID:       "b920a5c0-d8f1-11e4-85fc-358ed15ecf72",
 			Method:   "create",
 			Resource: "list",
@@ -31,43 +31,43 @@ func Test_Models_unit(t *testing.T) {
 
 		Convey("should return error when missing client id", func() {
 			c.ID = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingClientIDError)
 		})
 		Convey("should return error when missing client device type", func() {
 			c.DeviceType = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingClientDeviceTypeError)
 		})
 		Convey("should return error when missing user id", func() {
 			u.ID = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingUserIDError)
 		})
 		Convey("should return error when missing method", func() {
 			m.Method = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, MissingMsgMethodError)
+			So(err.Error(), ShouldContainSubstring, MissingEventMethodError)
 		})
 		Convey("should return error when missing resource", func() {
 			m.Resource = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, MissingMsgResourceError)
+			So(err.Error(), ShouldContainSubstring, MissingEventResourceError)
 		})
 		Convey("should return error when missing server hostname", func() {
 			s[0].Hostname = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingServerHostnameError)
 		})
 		Convey("should return error when missing server ip address", func() {
 			s[0].IPAddress = ""
-			err := ValidateMsg(c, u, m, s)
+			err := ValidateEvent(c, u, m, s)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, MissingServerIPAddressError)
 		})
